@@ -6,36 +6,51 @@ use App\Models\Booking;
 use App\Models\BookingEquipment;
 use App\Models\Laboratory;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class BookingService
 {
     public function create(array $data, int $userId): Booking
     {
         try {
-            if ($this->hasConflict($data['laboratory_id'], $data['start_time'], $data['end_time'])) {
-                throw new Exception('The selected time slot is already booked for this laboratory.');
-            }
-
-            $booking = Booking::create([
-                'user_id'       => $userId,
-                'laboratory_id' => $data['laboratory_id'],
-                'purpose'       => $data['purpose'],
-                'start_time'    => $data['start_time'],
-                'end_time'      => $data['end_time'],
-                'status'        => 'pending',
-            ]);
-
-            if (isset($data['equipment_ids']) && is_array($data['equipment_ids'])) {
-                foreach ($data['equipment_ids'] as $key => $equipmentId) {
-                    BookingEquipment::create([
-                        'booking_id'         => $booking->booking_id,
-                        'equipment_id'       => $equipmentId,
-                        'quantity_requested' => $data['equipment_quantities'][$key] ?? 1,
-                    ]);
+            return DB::transaction(function () use ($data, $userId) {
+                if ($this->hasConflict($data['laboratory_id'], $data['start_time'], $data['end_time'])) {
+                    throw new Exception('The selected time slot is already booked for this laboratory.');
                 }
-            }
 
-            return $booking;
+                $booking = Booking::create([
+                    'user_id'       => $userId,
+                    'laboratory_id' => $data['laboratory_id'],
+                    'purpose'       => $data['purpose'],
+                    'start_time'    => $data['start_time'],
+                    'end_time'      => $data['end_time'],
+                    'status'        => 'pending',
+                ]);
+
+                // Only insert equipment if actually selected and quantities are provided
+                $equipmentIds = $data['equipment_ids'] ?? [];
+                $equipmentQuantities = $data['equipment_quantities'] ?? [];
+
+                // Filter out empty/null values
+                $equipmentIds = array_filter($equipmentIds);
+                $equipmentQuantities = array_filter($equipmentQuantities, function ($val) {
+                    return $val !== null && $val !== '';
+                });
+
+                if (!empty($equipmentIds) && !empty($equipmentQuantities)) {
+                    foreach ($equipmentIds as $key => $equipmentId) {
+                        if (isset($equipmentQuantities[$key]) && $equipmentQuantities[$key] > 0) {
+                            BookingEquipment::create([
+                                'booking_id'         => $booking->booking_id,
+                                'equipment_id'       => $equipmentId,
+                                'quantity_requested' => (int)$equipmentQuantities[$key],
+                            ]);
+                        }
+                    }
+                }
+
+                return $booking;
+            });
         } catch (Exception $e) {
             throw $e;
         }
@@ -43,7 +58,11 @@ class BookingService
 
     public function cancel(Booking $booking): void
     {
-        $booking->update(['status' => 'cancelled']);
+        try {
+            $booking->update(['status' => 'cancelled']);
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 
     public function hasConflict(int $labId, string $startTime, string $endTime): bool

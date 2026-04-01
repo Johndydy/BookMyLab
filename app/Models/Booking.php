@@ -46,6 +46,16 @@ class Booking extends Model
         return $this->hasOne(Approval::class, 'booking_id', 'booking_id');
     }
 
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class, 'booking_id', 'booking_id');
+    }
+
+    public function equipmentLogs()
+    {
+        return $this->hasMany(EquipmentLog::class, 'booking_id', 'booking_id');
+    }
+
     public function scopePending($query)
     {
         return $query->where('status', 'pending');

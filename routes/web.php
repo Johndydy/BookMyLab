@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\User\DashboardController;
 use App\Http\Controllers\User\BookingController;
+use App\Http\Controllers\User\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,7 +31,15 @@ Route::middleware('auth')->name('user.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('/bookings', BookingController::class)->only(['index', 'create', 'store', 'destroy']);
     Route::get('/bookings/laboratory/{laboratory}/equipment', function ($laboratory) {
-        return \App\Models\Equipment::where('laboratory_id', $laboratory)->get();
+        // Ensure laboratory exists and is accessible
+        \App\Models\Laboratory::findOrFail($laboratory);
+        return \App\Models\Equipment::where('laboratory_id', $laboratory)
+            ->select('equipment_id', 'name', 'quantity')
+            ->get();
     });
+
+    // Notification Routes
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/read', [NotificationController::class, 'markAllRead'])->name('notifications.read');
 });
 

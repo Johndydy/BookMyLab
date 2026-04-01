@@ -86,6 +86,18 @@
         .main-content {
             flex: 1;
             padding: 30px 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content > .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content .alert {
+            flex-shrink: 0;
         }
 
         .btn-primary {
@@ -304,6 +316,19 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('user.bookings.index') }}">
                                 <i class="bi bi-calendar-check"></i> My Bookings
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('user.notifications.index') }}" style="position: relative;">
+                                <i class="bi bi-bell"></i> Notifications
+                                @php
+                                    $unreadCount = \App\Models\Notification::where('user_id', auth()->user()->user_id)->where('is_read', 0)->count();
+                                @endphp
+                                @if($unreadCount > 0)
+                                    <span class="badge bg-danger position-absolute top-0 start-100 translate-middle" style="font-size: 0.7rem;">
+                                        {{ $unreadCount }}
+                                    </span>
+                                @endif
                             </a>
                         </li>
                         @if(auth()->user()->isAdmin())

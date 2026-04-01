@@ -368,6 +368,12 @@
                 <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                     <i class="bi bi-people"></i> Users
                 </a>
+                <a href="{{ route('admin.maintenance_logs.index') }}" class="nav-link {{ request()->routeIs('admin.maintenance_logs.*') ? 'active' : '' }}">
+                    <i class="bi bi-wrench"></i> Maintenance Logs
+                </a>
+                <a href="{{ route('admin.equipment_logs.index') }}" class="nav-link {{ request()->routeIs('admin.equipment_logs.*') ? 'active' : '' }}">
+                    <i class="bi bi-box-seam"></i> Equipment Logs
+                </a>
                 <a href="{{ route('admin.reports.index') }}" class="nav-link {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
                     <i class="bi bi-graph-up"></i> Reports
                 </a>

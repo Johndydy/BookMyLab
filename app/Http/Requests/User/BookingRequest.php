@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\User;
 
+use App\Models\Equipment;
 use Illuminate\Foundation\Http\FormRequest;
 
 class BookingRequest extends FormRequest
@@ -21,8 +22,55 @@ class BookingRequest extends FormRequest
             'equipment_ids'         => 'nullable|array',
             'equipment_ids.*'       => 'exists:equipment,equipment_id',
             'equipment_quantities'  => 'nullable|array',
-            'equipment_quantities.*' => 'integer|min:1',
+            'equipment_quantities.*' => 'nullable|integer|min:1',
         ];
+    }
+
+    public function withValidator($validator)
+    {
+        // Validate that equipment_quantities are only provided when equipment_ids are provided
+        $validator->after(function ($validator) {
+            $equipmentIds = $this->input('equipment_ids', []);
+            $equipmentQuantities = $this->input('equipment_quantities', []);
+
+            // Filter out empty values
+            $equipmentIds = array_filter($equipmentIds);
+            $equipmentQuantities = array_filter($equipmentQuantities, function ($val) {
+                return $val !== null && $val !== '';
+            });
+
+            // If quantities are provided without IDs, it's an error
+            if (!empty($equipmentQuantities) && empty($equipmentIds)) {
+                $validator->errors()->add('equipment_ids', 'Please select equipment before specifying quantities.');
+                return;
+            }
+
+            // Validate that requested quantities don't exceed available quantities
+            if (!empty($equipmentIds)) {
+                foreach ($equipmentIds as $key => $equipmentId) {
+                    if (!isset($equipmentQuantities[$key])) {
+                        continue;
+                    }
+
+                    $quantity = (int)$equipmentQuantities[$key];
+                    if ($quantity <= 0) {
+                        continue;
+                    }
+
+                    $equipment = Equipment::find($equipmentId);
+                    if (!$equipment) {
+                        continue;
+                    }
+
+                    if ($quantity > $equipment->quantity) {
+                        $validator->errors()->add(
+                            'equipment_quantities',
+                            "Cannot request {$quantity} units of {$equipment->name}. Only {$equipment->quantity} available."
+                        );
+                    }
+                }
+            }
+        });
     }
 
     public function messages()
@@ -44,3 +92,4 @@ class BookingRequest extends FormRequest
         ];
     }
 }
+

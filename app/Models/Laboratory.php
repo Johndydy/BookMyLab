@@ -35,6 +35,11 @@ class Laboratory extends Model
         return $this->hasMany(Booking::class, 'laboratory_id', 'laboratory_id');
     }
 
+    public function maintenanceLogs()
+    {
+        return $this->hasMany(MaintenanceLog::class, 'laboratory_id', 'laboratory_id');
+    }
+
     public function scopeAvailable($query)
     {
         return $query->where('status', 'available');

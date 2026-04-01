@@ -29,6 +29,11 @@ class Equipment extends Model
         return $this->hasMany(BookingEquipment::class, 'equipment_id', 'equipment_id');
     }
 
+    public function logs()
+    {
+        return $this->hasMany(EquipmentLog::class, 'equipment_id', 'equipment_id');
+    }
+
     public function scopeGood($query)
     {
         return $query->where('condition', 'good');

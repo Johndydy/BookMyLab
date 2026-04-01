@@ -45,6 +45,16 @@ class User extends Authenticatable
         return $this->hasMany(Approval::class, 'admin_id', 'user_id');
     }
 
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class, 'user_id', 'user_id');
+    }
+
+    public function maintenanceLogs()
+    {
+        return $this->hasMany(MaintenanceLog::class, 'admin_id', 'user_id');
+    }
+
     public function isAdmin()
     {
         return $this->role === 'admin';
