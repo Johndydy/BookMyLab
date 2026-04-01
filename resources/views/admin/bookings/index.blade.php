@@ -1,0 +1,134 @@
+@extends('layouts.admin')
+
+@section('title', 'Manage Bookings')
+
+@section('content')
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2>Manage Bookings</h2>
+    </div>
+    <div class="col-md-4">
+        <form action="{{ route('admin.bookings.index') }}" method="GET" class="d-flex gap-2">
+            <select name="status" class="form-select form-select-sm">
+                <option value="">All Statuses</option>
+                <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
+                <option value="approved" {{ request('status') === 'approved' ? 'selected' : '' }}>Approved</option>
+                <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Rejected</option>
+                <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+            </select>
+            <button type="submit" class="btn btn-sm btn-primary">Filter</button>
+        </form>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Laboratory</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Purpose</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($bookings as $booking)
+                <tr>
+                    <td>{{ $booking->user->name }}<br><small class="text-muted">{{ $booking->user->school_email }}</small></td>
+                    <td>{{ $booking->laboratory->name }}</td>
+                    <td>{{ $booking->start_time->format('M d, Y') }}</td>
+                    <td>{{ $booking->start_time->format('H:i') }} - {{ $booking->end_time->format('H:i') }}</td>
+                    <td>{{ Str::limit($booking->purpose, 30) }}</td>
+                    <td>
+                        @if($booking->status === 'pending')
+                            <span class="badge badge-pending">Pending</span>
+                        @elseif($booking->status === 'approved')
+                            <span class="badge badge-approved">Approved</span>
+                        @elseif($booking->status === 'rejected')
+                            <span class="badge badge-rejected">Rejected</span>
+                        @else
+                            <span class="badge badge-cancelled">Cancelled</span>
+                        @endif
+                    </td>
+                    <td>
+                        @if($booking->status === 'pending')
+                            <!-- Approve Button -->
+                            <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#approveModal{{ $booking->booking_id }}">
+                                Approve
+                            </button>
+
+                            <!-- Reject Button -->
+                            <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal{{ $booking->booking_id }}">
+                                Reject
+                            </button>
+
+                            <!-- Approve Modal -->
+                            <div class="modal fade" id="approveModal{{ $booking->booking_id }}" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Approve Booking</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <form action="{{ route('admin.bookings.approve', $booking) }}" method="POST">
+                                            @csrf
+                                            <div class="modal-body">
+                                                <div class="form-group">
+                                                    <label for="remarks{{ $booking->booking_id }}" class="form-label">Remarks (Optional)</label>
+                                                    <textarea class="form-control" id="remarks{{ $booking->booking_id }}" name="remarks" rows="3"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-success">Approve</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Reject Modal -->
+                            <div class="modal fade" id="rejectModal{{ $booking->booking_id }}" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Reject Booking</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <form action="{{ route('admin.bookings.reject', $booking) }}" method="POST">
+                                            @csrf
+                                            <div class="modal-body">
+                                                <div class="form-group">
+                                                    <label for="remarks{{ $booking->booking_id }}" class="form-label">Remarks (Optional)</label>
+                                                    <textarea class="form-control" id="remarks{{ $booking->booking_id }}" name="remarks" rows="3" placeholder="Reason for rejection..."></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-danger">Reject</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            <span class="text-muted">-</span>
+                        @endif
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="7" class="text-center text-muted">No bookings found.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
+
+<div class="d-flex justify-content-center mt-4">
+    {{ $bookings->links() }}
+</div>
+@endsection
