@@ -9,6 +9,9 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\MaintenanceLogController;
 use App\Http\Controllers\Admin\EquipmentLogController;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\UserRoleController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -35,4 +38,16 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Equipment Logs Routes
     Route::get('/equipment-logs', [EquipmentLogController::class, 'index'])->name('equipment_logs.index');
     Route::put('/equipment-logs/{log}/return', [EquipmentLogController::class, 'update'])->name('equipment_logs.update');
+
+    // RBAC Management Routes
+    Route::resource('/roles', RoleController::class);
+    Route::post('/roles/{role}/attach-permission', [RoleController::class, 'attachPermission'])->name('roles.attach-permission');
+    Route::delete('/roles/{role}/permissions/{permission}', [RoleController::class, 'detachPermission'])->name('roles.detach-permission');
+
+    Route::resource('/permissions', PermissionController::class);
+
+    Route::get('/user-roles', [UserRoleController::class, 'index'])->name('user-roles.index');
+    Route::get('/user-roles/{user}', [UserRoleController::class, 'show'])->name('user-roles.show');
+    Route::post('/user-roles/{user}/assign', [UserRoleController::class, 'assignRole'])->name('user-roles.assign');
+    Route::delete('/user-roles/{user}/roles/{role}', [UserRoleController::class, 'removeRole'])->name('user-roles.remove');
 });

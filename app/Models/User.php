@@ -55,9 +55,58 @@ class User extends Authenticatable
         return $this->hasMany(MaintenanceLog::class, 'admin_id', 'user_id');
     }
 
+    public function roles()
+    {
+        return $this->belongsToMany(
+            Role::class,
+            'user_roles',
+            'user_id',
+            'role_id'
+        );
+    }
+
     public function isAdmin()
     {
         return $this->role === 'admin';
+    }
+
+    public function hasRole($roleName)
+    {
+        return $this->roles()
+            ->where('name', $roleName)
+            ->exists();
+    }
+
+    public function hasPermission($permissionName)
+    {
+        return $this->roles()
+            ->whereHas('permissions', function ($query) use ($permissionName) {
+                $query->where('name', $permissionName);
+            })
+            ->exists();
+    }
+
+    public function assignRole(Role $role)
+    {
+        if (!$this->hasRole($role->name)) {
+            $this->roles()->attach($role);
+        }
+    }
+
+    public function removeRole(Role $role)
+    {
+        $this->roles()->detach($role);
+    }
+
+    public function getAllPermissions()
+    {
+        return $this->roles()
+            ->with('permissions')
+            ->get()
+            ->flatMap(function ($role) {
+                return $role->permissions;
+            })
+            ->unique('permission_id');
     }
 
     public function scopeStudents($query)
