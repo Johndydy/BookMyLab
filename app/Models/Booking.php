@@ -2,15 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Booking extends Model
 {
-    use HasFactory;
-
     protected $primaryKey = 'booking_id';
-    public $incrementing = true;
 
     protected $fillable = [
         'user_id',
@@ -21,58 +17,44 @@ class Booking extends Model
         'status',
     ];
 
-    protected $dates = [
-        'start_time',
-        'end_time',
+    protected $casts = [
+        'start_time' => 'datetime',
+        'end_time'   => 'datetime',
     ];
 
+    // A booking belongs to a user
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'user_id');
     }
 
+    // A booking belongs to a laboratory
     public function laboratory()
     {
         return $this->belongsTo(Laboratory::class, 'laboratory_id', 'laboratory_id');
     }
 
-    public function equipment()
-    {
-        return $this->hasMany(BookingEquipment::class, 'booking_id', 'booking_id');
-    }
-
+    // A booking has one approval
     public function approval()
     {
         return $this->hasOne(Approval::class, 'booking_id', 'booking_id');
     }
 
+    // A booking can request many equipment items
+    public function bookingEquipment()
+    {
+        return $this->hasMany(BookingEquipment::class, 'booking_id', 'booking_id');
+    }
+
+    // A booking can trigger many notifications
     public function notifications()
     {
         return $this->hasMany(Notification::class, 'booking_id', 'booking_id');
     }
 
+    // A booking can have many equipment logs
     public function equipmentLogs()
     {
         return $this->hasMany(EquipmentLog::class, 'booking_id', 'booking_id');
-    }
-
-    public function scopePending($query)
-    {
-        return $query->where('status', 'pending');
-    }
-
-    public function scopeApproved($query)
-    {
-        return $query->where('status', 'approved');
-    }
-
-    public function scopeRejected($query)
-    {
-        return $query->where('status', 'rejected');
-    }
-
-    public function scopeCancelled($query)
-    {
-        return $query->where('status', 'cancelled');
     }
 }

@@ -2,15 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Approval extends Model
 {
-    use HasFactory;
-
     protected $primaryKey = 'approval_id';
-    public $incrementing = true;
 
     protected $fillable = [
         'booking_id',
@@ -20,27 +16,19 @@ class Approval extends Model
         'decided_at',
     ];
 
-    protected $dates = [
-        'decided_at',
+    protected $casts = [
+        'decided_at' => 'datetime',
     ];
 
+    // An approval belongs to a booking
     public function booking()
     {
         return $this->belongsTo(Booking::class, 'booking_id', 'booking_id');
     }
 
+    // An approval belongs to the admin who decided it
     public function admin()
     {
         return $this->belongsTo(User::class, 'admin_id', 'user_id');
-    }
-
-    public function scopeApproved($query)
-    {
-        return $query->where('decision', 'approved');
-    }
-
-    public function scopeRejected($query)
-    {
-        return $query->where('decision', 'rejected');
     }
 }

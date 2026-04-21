@@ -6,11 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateBookingEquipmentTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
         Schema::create('booking_equipment', function (Blueprint $table) {
@@ -22,14 +17,12 @@ class CreateBookingEquipmentTable extends Migration
 
             $table->foreign('booking_id')->references('booking_id')->on('bookings')->onDelete('cascade');
             $table->foreign('equipment_id')->references('equipment_id')->on('equipment')->onDelete('cascade');
+
+            // Prevents the same equipment being requested twice on the same booking
+            $table->unique(['booking_id', 'equipment_id']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::dropIfExists('booking_equipment');

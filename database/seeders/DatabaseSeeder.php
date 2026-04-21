@@ -15,49 +15,32 @@ class DatabaseSeeder extends Seeder
 {
     public function run()
     {
-        // Create permissions (skip if already exist)
+        // Create permissions
         $permissions = [
-            // Booking permissions
-            ['name' => 'create-booking', 'description' => 'Can create new bookings'],
-            ['name' => 'view-booking', 'description' => 'Can view bookings'],
-            ['name' => 'cancel-booking', 'description' => 'Can cancel bookings'],
-            
-            // Approval permissions
-            ['name' => 'approve-booking', 'description' => 'Can approve bookings'],
-            ['name' => 'reject-booking', 'description' => 'Can reject bookings'],
-            
-            // Lab management permissions
-            ['name' => 'manage-laboratory', 'description' => 'Can manage laboratories'],
-            ['name' => 'view-laboratory', 'description' => 'Can view laboratories'],
-            
-            // Equipment management permissions
-            ['name' => 'manage-equipment', 'description' => 'Can manage equipment'],
-            ['name' => 'view-equipment', 'description' => 'Can view equipment'],
-            
-            // Department management permissions
-            ['name' => 'manage-department', 'description' => 'Can manage departments'],
-            
-            // User management permissions
-            ['name' => 'manage-users', 'description' => 'Can manage users'],
-            ['name' => 'view-users', 'description' => 'Can view users'],
-            
-            // Maintenance permissions
-            ['name' => 'manage-maintenance', 'description' => 'Can manage maintenance logs'],
-            ['name' => 'view-maintenance', 'description' => 'Can view maintenance logs'],
-            
-            // Equipment log permissions
-            ['name' => 'manage-equipment-logs', 'description' => 'Can manage equipment logs'],
-            ['name' => 'view-equipment-logs', 'description' => 'Can view equipment logs'],
-            
-            // Report permissions
-            ['name' => 'view-reports', 'description' => 'Can view system reports'],
+            ['name' => 'create-booking',        'description' => 'Can create new bookings'],
+            ['name' => 'view-booking',           'description' => 'Can view bookings'],
+            ['name' => 'cancel-booking',         'description' => 'Can cancel bookings'],
+            ['name' => 'approve-booking',        'description' => 'Can approve bookings'],
+            ['name' => 'reject-booking',         'description' => 'Can reject bookings'],
+            ['name' => 'manage-laboratory',      'description' => 'Can manage laboratories'],
+            ['name' => 'view-laboratory',        'description' => 'Can view laboratories'],
+            ['name' => 'manage-equipment',       'description' => 'Can manage equipment'],
+            ['name' => 'view-equipment',         'description' => 'Can view equipment'],
+            ['name' => 'manage-department',      'description' => 'Can manage departments'],
+            ['name' => 'manage-users',           'description' => 'Can manage users'],
+            ['name' => 'view-users',             'description' => 'Can view users'],
+            ['name' => 'manage-maintenance',     'description' => 'Can manage maintenance logs'],
+            ['name' => 'view-maintenance',       'description' => 'Can view maintenance logs'],
+            ['name' => 'manage-equipment-logs',  'description' => 'Can manage equipment logs'],
+            ['name' => 'view-equipment-logs',    'description' => 'Can view equipment logs'],
+            ['name' => 'view-reports',           'description' => 'Can view system reports'],
         ];
 
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(['name' => $permission['name']], $permission);
         }
 
-        // Create roles (skip if already exist)
+        // Create roles
         $studentRole = Role::firstOrCreate(
             ['name' => 'student'],
             ['description' => 'Regular student user']
@@ -81,63 +64,68 @@ class DatabaseSeeder extends Seeder
             $studentRole->permissions()->attach($studentPermissions);
         }
 
-        // Assign permissions to admin role
+        // Assign all permissions to admin role
         $adminPermissions = Permission::pluck('permission_id')->toArray();
         if ($adminRole->permissions()->count() === 0) {
             $adminRole->permissions()->attach($adminPermissions);
         }
 
-        // Create admin user (skip if already exist)
+        // Create admin user
+        // FIXED: uses first_name/last_name and school_id_number instead of name/role
         $admin = User::firstOrCreate(
             ['school_email' => 'admin@school.edu'],
             [
-                'name' => 'Admin User',
-                'password' => Hash::make('password123'),
-                'role' => 'admin'
+                'first_name'       => 'Admin',
+                'last_name'        => 'User',
+                'school_id_number' => 'ADMIN-001',
+                'password'         => Hash::make('password123'),
             ]
         );
         if (!$admin->hasRole('administrator')) {
             $admin->assignRole($adminRole);
         }
 
-        // Create test users (skip if already exist)
+        // Create test user: John
         $john = User::firstOrCreate(
             ['school_email' => 'john@school.edu'],
             [
-                'name' => 'John Doe',
-                'password' => Hash::make('password123'),
-                'role' => 'user'
+                'first_name'       => 'John',
+                'last_name'        => 'Doe',
+                'school_id_number' => 'STU-001',
+                'password'         => Hash::make('password123'),
             ]
         );
         if (!$john->hasRole('student')) {
             $john->assignRole($studentRole);
         }
 
+        // Create test user: Jane
         $jane = User::firstOrCreate(
             ['school_email' => 'jane@school.edu'],
             [
-                'name' => 'Jane Smith',
-                'password' => Hash::make('password123'),
-                'role' => 'user'
+                'first_name'       => 'Jane',
+                'last_name'        => 'Smith',
+                'school_id_number' => 'STU-002',
+                'password'         => Hash::make('password123'),
             ]
         );
         if (!$jane->hasRole('student')) {
             $jane->assignRole($studentRole);
         }
 
-        // Create department (skip if already exist)
+        // Create department
         $dept = Department::firstOrCreate(
             ['name' => 'Physics Department'],
             ['building' => 'Science Building A']
         );
 
-        // Create laboratories (skip if already exist)
+        // Create laboratories
         $lab1 = Laboratory::firstOrCreate(
             ['department_id' => $dept->department_id, 'name' => 'Physics Lab 101'],
             [
                 'location' => 'Room 101',
                 'capacity' => 30,
-                'status' => 'available'
+                'status'   => 'available',
             ]
         );
 
@@ -146,11 +134,11 @@ class DatabaseSeeder extends Seeder
             [
                 'location' => 'Room 102',
                 'capacity' => 25,
-                'status' => 'available'
+                'status'   => 'available',
             ]
         );
 
-        // Create equipment (skip if already exist)
+        // Create equipment
         Equipment::firstOrCreate(
             ['laboratory_id' => $lab1->laboratory_id, 'name' => 'Oscilloscope'],
             ['quantity' => 5, 'condition' => 'good']

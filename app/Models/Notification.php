@@ -2,15 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Notification extends Model
 {
-    use HasFactory;
-
     protected $primaryKey = 'notification_id';
-    public $incrementing = true;
 
     protected $fillable = [
         'user_id',
@@ -19,18 +15,19 @@ class Notification extends Model
         'is_read',
     ];
 
+    protected $casts = [
+        'is_read' => 'boolean',
+    ];
+
+    // A notification belongs to a user
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'user_id');
     }
 
+    // A notification belongs to a booking
     public function booking()
     {
         return $this->belongsTo(Booking::class, 'booking_id', 'booking_id');
-    }
-
-    public function scopeUnread($query)
-    {
-        return $query->where('is_read', 0);
     }
 }

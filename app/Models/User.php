@@ -2,115 +2,74 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use Notifiable;
 
     protected $primaryKey = 'user_id';
-    public $incrementing = true;
 
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
         'school_email',
+        'school_id_number',
         'password',
-        'role',
     ];
 
     protected $hidden = [
         'password',
     ];
 
-    public function getAuthIdentifierName()
-    {
-        return 'user_id';
-    }
-
-    protected $casts = [
-        //
-    ];
-
+    // A user can make many bookings
     public function bookings()
     {
         return $this->hasMany(Booking::class, 'user_id', 'user_id');
     }
 
-    public function approvals()
-    {
-        return $this->hasMany(Approval::class, 'admin_id', 'user_id');
-    }
-
+    // A user can have many notifications
     public function notifications()
     {
         return $this->hasMany(Notification::class, 'user_id', 'user_id');
     }
 
+    // A user can have many maintenance logs (as admin)
     public function maintenanceLogs()
     {
         return $this->hasMany(MaintenanceLog::class, 'admin_id', 'user_id');
     }
 
+    // A user can decide on many approvals (as admin)
+    public function approvals()
+    {
+        return $this->hasMany(Approval::class, 'admin_id', 'user_id');
+    }
+
+    // A user belongs to many roles via user_roles pivot table
     public function roles()
     {
-        return $this->belongsToMany(
-            Role::class,
-            'user_roles',
-            'user_id',
-            'role_id'
-        );
+        return $this->belongsToMany(Role::class, 'user_roles', 'user_id', 'role_id');
     }
 
-    public function isAdmin()
+    // Helper: check if user has a specific role by name
+    public function hasRole(string $roleName): bool
     {
-        return $this->role === 'admin';
+        return $this->roles()->where('name', $roleName)->exists();
     }
 
-    public function hasRole($roleName)
-    {
-        return $this->roles()
-            ->where('name', $roleName)
-            ->exists();
-    }
-
-    public function hasPermission($permissionName)
-    {
-        return $this->roles()
-            ->whereHas('permissions', function ($query) use ($permissionName) {
-                $query->where('name', $permissionName);
-            })
-            ->exists();
-    }
-
-    public function assignRole(Role $role)
+    // Helper: assign a role to this user
+    public function assignRole(Role $role): void
     {
         if (!$this->hasRole($role->name)) {
-            $this->roles()->attach($role);
+            $this->roles()->attach($role->role_id);
         }
     }
 
-    public function removeRole(Role $role)
+    // Helper: get full name
+    public function getFullNameAttribute(): string
     {
-        $this->roles()->detach($role);
-    }
-
-    public function getAllPermissions()
-    {
-        return $this->roles()
-            ->with('permissions')
-            ->get()
-            ->flatMap(function ($role) {
-                return $role->permissions;
-            })
-            ->unique('permission_id');
-    }
-
-    public function scopeStudents($query)
-    {
-        return $query->where('role', 'user');
+        return "{$this->first_name} {$this->last_name}";
     }
 }

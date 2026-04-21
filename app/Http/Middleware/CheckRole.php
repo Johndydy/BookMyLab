@@ -7,17 +7,30 @@ use Illuminate\Http\Request;
 
 class CheckRole
 {
-    public function handle(Request $request, Closure $next, $role)
+    /**
+     * Usage in routes: middleware('role:administrator')
+     * Multiple roles: middleware('role:administrator,staff')
+     */
+    public function handle(Request $request, Closure $next, string ...$roles)
     {
-        if (!$request->user()) {
-            return redirect('login');
+        $user = $request->user();
+
+        // Must be authenticated first
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthenticated.',
+            ], 401);
         }
 
-        // Support both old enum-based role and new RBAC role system
-        if ($request->user()->role === $role || $request->user()->hasRole($role)) {
-            return $next($request);
+        // Check if user has any of the required roles
+        foreach ($roles as $role) {
+            if ($user->hasRole($role)) {
+                return $next($request);
+            }
         }
 
-        abort(403, 'Unauthorized');
+        return response()->json([
+            'message' => 'Unauthorized. You do not have permission to access this resource.',
+        ], 403);
     }
 }

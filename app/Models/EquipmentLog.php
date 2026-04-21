@@ -2,16 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class EquipmentLog extends Model
 {
-    use HasFactory;
-
     protected $primaryKey = 'equipmentlog_id';
-    public $incrementing = true;
-    protected $table = 'equipment_logs';
 
     protected $fillable = [
         'booking_id',
@@ -22,28 +17,20 @@ class EquipmentLog extends Model
         'condition_after',
     ];
 
-    protected $dates = [
-        'borrowed_at',
-        'returned_at',
+    protected $casts = [
+        'borrowed_at'  => 'datetime',
+        'returned_at'  => 'datetime',
     ];
 
+    // An equipment log belongs to a booking
     public function booking()
     {
         return $this->belongsTo(Booking::class, 'booking_id', 'booking_id');
     }
 
+    // An equipment log belongs to an equipment item
     public function equipment()
     {
         return $this->belongsTo(Equipment::class, 'equipment_id', 'equipment_id');
-    }
-
-    public function scopeNotReturned($query)
-    {
-        return $query->whereNull('returned_at');
-    }
-
-    public function scopeReturned($query)
-    {
-        return $query->whereNotNull('returned_at');
     }
 }
