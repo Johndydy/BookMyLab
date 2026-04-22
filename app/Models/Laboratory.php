@@ -39,4 +39,10 @@ class Laboratory extends Model
     {
         return $this->hasMany(MaintenanceLog::class, 'laboratory_id', 'laboratory_id');
     }
+
+    // Query scope for available laboratories
+    public function scopeAvailable($query)
+    {
+        return $query->where('status', 'available');
+    }
 }

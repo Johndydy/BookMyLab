@@ -24,4 +24,18 @@ class Role extends Model
     {
         return $this->belongsToMany(Permission::class, 'role_permissions', 'role_id', 'permission_id');
     }
+
+    // Helper: give a permission to this role
+    public function givePermission(Permission $permission): void
+    {
+        if (!$this->permissions()->where('permission_id', $permission->permission_id)->exists()) {
+            $this->permissions()->attach($permission->permission_id);
+        }
+    }
+
+    // Helper: revoke a permission from this role
+    public function revokePermission(Permission $permission): void
+    {
+        $this->permissions()->detach($permission->permission_id);
+    }
 }

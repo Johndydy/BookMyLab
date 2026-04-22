@@ -32,4 +32,10 @@ class MaintenanceLog extends Model
     {
         return $this->belongsTo(User::class, 'admin_id', 'user_id');
     }
+
+    // Query scope for ongoing maintenance
+    public function scopeOngoing($query)
+    {
+        return $query->whereNull('ended_at');
+    }
 }

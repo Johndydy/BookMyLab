@@ -57,4 +57,25 @@ class Booking extends Model
     {
         return $this->hasMany(EquipmentLog::class, 'booking_id', 'booking_id');
     }
+
+    // Query scopes for booking status
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->where('status', 'approved');
+    }
+
+    public function scopeRejected($query)
+    {
+        return $query->where('status', 'rejected');
+    }
+
+    public function scopeCancelled($query)
+    {
+        return $query->where('status', 'cancelled');
+    }
 }

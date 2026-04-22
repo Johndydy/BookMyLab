@@ -93,8 +93,8 @@ class ReportingService
     {
         return DB::table('users as u')
             ->leftJoin('bookings as b', 'u.user_id', '=', 'b.user_id')
-            ->select('u.user_id', 'u.name', 'u.school_email', DB::raw('COUNT(b.booking_id) as total_bookings'))
-            ->groupBy('u.user_id', 'u.name', 'u.school_email')
+            ->select('u.user_id', DB::raw('CONCAT(u.first_name, " ", u.last_name) as name'), 'u.school_email', DB::raw('COUNT(b.booking_id) as total_bookings'))
+            ->groupBy('u.user_id', 'u.first_name', 'u.last_name', 'u.school_email')
             ->orderByDesc('total_bookings')
             ->limit($limit)
             ->get();
@@ -206,12 +206,12 @@ class ReportingService
             ->join('users as u', 'a.admin_id', '=', 'u.user_id')
             ->select(
                 'u.user_id',
-                'u.name',
+                DB::raw('CONCAT(u.first_name, " ", u.last_name) as name'),
                 DB::raw('COUNT(a.approval_id) as total_decisions'),
                 DB::raw("SUM(CASE WHEN a.decision = 'approved' THEN 1 ELSE 0 END) as approved"),
                 DB::raw("SUM(CASE WHEN a.decision = 'rejected' THEN 1 ELSE 0 END) as rejected")
             )
-            ->groupBy('u.user_id', 'u.name')
+            ->groupBy('u.user_id', 'u.first_name', 'u.last_name')
             ->orderByDesc('total_decisions')
             ->get();
     }

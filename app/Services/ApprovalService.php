@@ -34,15 +34,15 @@ class ApprovalService
                 ]);
 
                 // Create equipment logs if equipment was requested
-                if ($booking->equipment()->exists()) {
-                    foreach ($booking->equipment as $bookingEquipment) {
+                if ($booking->bookingEquipment()->exists()) {
+                    foreach ($booking->bookingEquipment as $bookingEquipment) {
                         EquipmentLog::create([
-                            'booking_id'       => $booking->booking_id,
-                            'equipment_id'     => $bookingEquipment->equipment_id,
-                            'quantity_borrowed' => $bookingEquipment->quantity_requested,
-                            'borrowed_at'      => $booking->start_time,
-                            'returned_at'      => null,
-                            'condition_after'  => null,
+                            'booking_id'         => $booking->booking_id,
+                            'equipment_id'       => $bookingEquipment->equipment_id,
+                            'quantity_borrowed'  => $bookingEquipment->quantity_requested,
+                            'borrowed_at'        => $booking->start_time,
+                            'returned_at'        => null,
+                            'condition_after'    => null,
                         ]);
                     }
                 }

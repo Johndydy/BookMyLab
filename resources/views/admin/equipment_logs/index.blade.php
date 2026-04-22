@@ -1,11 +1,10 @@
 @extends('layouts.admin')
-
 @section('title', 'Equipment Logs')
-
 @section('content')
 <div class="row mb-4">
     <div class="col-md-12">
         <h2>Equipment Borrowing & Return Logs</h2>
+        <p class="text-muted">Track all equipment borrowed and returned per booking.</p>
     </div>
 </div>
 
@@ -26,9 +25,9 @@
         <tbody>
             @forelse($logs as $log)
                 <tr>
-                    <td>{{ $log->equipment->name }}</td>
+                    <td><strong>{{ $log->equipment->name }}</strong></td>
                     <td>
-                        {{ $log->booking->user->name }}<br>
+                        {{ $log->booking->user->full_name }}<br>
                         <small class="text-muted">Booking #{{ $log->booking->booking_id }}</small>
                     </td>
                     <td>{{ $log->booking->laboratory->name }}</td>
@@ -38,25 +37,25 @@
                         @if($log->returned_at)
                             {{ $log->returned_at->format('M d, Y H:i') }}
                         @else
-                            <span class="badge badge-warning">Not Returned</span>
+                            <span class="badge bg-warning text-dark">Not Returned</span>
                         @endif
                     </td>
                     <td>
                         @if($log->condition_after === 'good')
-                            <span class="badge badge-success">Good</span>
+                            <span class="badge bg-success">Good</span>
                         @elseif($log->condition_after === 'damaged')
-                            <span class="badge badge-danger">Damaged</span>
+                            <span class="badge bg-danger">Damaged</span>
                         @else
-                            <span class="text-muted">-</span>
+                            <span class="text-muted">—</span>
                         @endif
                     </td>
                     <td>
                         @if(!$log->returned_at)
-                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#returnModal{{ $log->equipmentlog_id }}">
+                            <button class="btn btn-sm btn-primary"
+                                data-bs-toggle="modal" data-bs-target="#returnModal{{ $log->equipmentlog_id }}">
                                 Mark Returned
                             </button>
 
-                            <!-- Return Equipment Modal -->
                             <div class="modal fade" id="returnModal{{ $log->equipmentlog_id }}" tabindex="-1">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
@@ -68,9 +67,11 @@
                                             @csrf
                                             @method('PUT')
                                             <div class="modal-body">
-                                                <div class="form-group mb-3">
-                                                    <label for="condition{{ $log->equipmentlog_id }}" class="form-label">Equipment Condition <span class="text-danger">*</span></label>
-                                                    <select class="form-select" id="condition{{ $log->equipmentlog_id }}" name="condition_after" required>
+                                                <p>Marking <strong>{{ $log->equipment->name }}</strong> as returned
+                                                   from <strong>{{ $log->booking->user->full_name }}</strong>.</p>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Condition After Return <span class="text-danger">*</span></label>
+                                                    <select class="form-select" name="condition_after" required>
                                                         <option value="">-- Select Condition --</option>
                                                         <option value="good">Good</option>
                                                         <option value="damaged">Damaged</option>
@@ -86,20 +87,17 @@
                                 </div>
                             </div>
                         @else
-                            <span class="text-muted">-</span>
+                            <span class="text-muted">—</span>
                         @endif
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="8" class="text-center text-muted">No equipment logs found.</td>
+                    <td colspan="8" class="text-center text-muted py-4">No equipment logs found.</td>
                 </tr>
             @endforelse
         </tbody>
     </table>
 </div>
-
-<div class="d-flex justify-content-center mt-4">
-    {{ $logs->links() }}
-</div>
+<div class="d-flex justify-content-center mt-3">{{ $logs->links() }}</div>
 @endsection

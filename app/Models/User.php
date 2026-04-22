@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use HasApiTokens, Notifiable;
 
     protected $primaryKey = 'user_id';
 
@@ -65,6 +66,38 @@ class User extends Authenticatable
         if (!$this->hasRole($role->name)) {
             $this->roles()->attach($role->role_id);
         }
+    }
+
+    // Helper: remove a role from this user
+    public function removeRole(Role $role): void
+    {
+        if ($this->hasRole($role->name)) {
+            $this->roles()->detach($role->role_id);
+        }
+    }
+
+    // Helper: check if user is admin
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('administrator');
+    }
+
+    // Helper: check if user has a specific permission
+    public function hasPermission(string $permissionName): bool
+    {
+        return $this->roles
+            ->flatMap->permissions
+            ->pluck('name')
+            ->contains($permissionName);
+    }
+
+    // Helper: get all permissions from user's roles
+    public function getAllPermissions()
+    {
+        return $this->roles
+            ->flatMap->permissions
+            ->unique('permission_id')
+            ->values();
     }
 
     // Helper: get full name

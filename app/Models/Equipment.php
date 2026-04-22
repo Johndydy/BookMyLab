@@ -32,4 +32,15 @@ class Equipment extends Model
     {
         return $this->hasMany(EquipmentLog::class, 'equipment_id', 'equipment_id');
     }
+
+    // Query scopes for equipment condition
+    public function scopeDamaged($query)
+    {
+        return $query->where('condition', 'damaged');
+    }
+
+    public function scopeUnderRepair($query)
+    {
+        return $query->where('condition', 'under repair');
+    }
 }
