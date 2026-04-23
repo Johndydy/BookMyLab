@@ -83,6 +83,130 @@
         .pagination .page-link { border-radius: var(--border-radius); border: 1px solid #ddd; color: var(--dark-blue); transition: all 0.3s ease; }
         .pagination .page-link:hover { background-color: var(--dark-blue); border-color: var(--dark-blue); color: var(--white); }
         .pagination .page-item.active .page-link { background-color: var(--dark-blue); border-color: var(--dark-blue); }
+        /* Google Setup Modal Styles */
+        #googleSetupModal .modal-content {
+            border: none;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        #googleSetupModal .modal-header {
+            border: none;
+            text-align: center;
+            display: block;
+            padding: 0;
+        }
+
+        #googleSetupModal .modal-title {
+            color: #1a2e4a;
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        #googleSetupModal .modal-subtitle {
+            color: #6c757d;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            margin-bottom: 20px;
+        }
+
+        #googleSetupModal .user-card {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        #googleSetupModal .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background-color: #1a2e4a;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        #googleSetupModal .user-info h5 {
+            margin: 0;
+            color: #1a2e4a;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        #googleSetupModal .user-info p {
+            margin: 0;
+            color: #6c757d;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        #googleSetupModal .form-label {
+            color: #1a2e4a;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            margin-bottom: 8px;
+        }
+
+        #googleSetupModal .input-group-text {
+            background-color: white;
+            border-right: none;
+            color: #6c757d;
+        }
+
+        #googleSetupModal .form-control {
+            border-left: none;
+            padding: 12px;
+        }
+
+        #googleSetupModal .form-control:focus {
+            box-shadow: none;
+            border-color: #dee2e6;
+        }
+
+        #googleSetupModal .input-group:focus-within {
+            border-radius: var(--border-radius);
+            box-shadow: 0 0 0 0.2rem rgba(26, 46, 74, 0.1);
+        }
+
+        #googleSetupModal .field-hint {
+            font-size: 0.75rem;
+            color: #adb5bd;
+            margin-top: 5px;
+            text-transform: uppercase;
+        }
+
+        #googleSetupModal .btn-create {
+            background-color: #ff9800;
+            border: none;
+            color: white;
+            width: 100%;
+            padding: 12px;
+            font-weight: 800;
+            font-size: 1rem;
+            text-transform: uppercase;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        #googleSetupModal .btn-create:hover {
+            background-color: #e68900;
+        }
     </style>
     @yield('styles')
 </head>
@@ -131,6 +255,11 @@
                                 <i class="bi bi-person-circle"></i> {{ auth()->user()->full_name }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('user.profile.edit') }}">
+                                        <i class="bi bi-gear"></i> Account Settings
+                                    </a>
+                                </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <form action="{{ route('logout') }}" method="POST">
@@ -182,7 +311,84 @@
         <p>&copy; {{ date('Y') }} School Laboratory Booking System. All rights reserved.</p>
     </footer>
 
+    @auth
+        @if(session('show_google_setup_modal') || !auth()->user()->username || !auth()->user()->profile_completed_at)
+        <!-- Google Setup Modal -->
+        <div class="modal fade" id="googleSetupModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content shadow-lg">
+                    <div class="modal-header">
+                        <h1 class="modal-title w-100">Complete Your Identity</h1>
+                        <p class="modal-subtitle">Set a unique username and password to complete your account.<br>This will allow you to log in directly later.</p>
+                    </div>
+                    <div class="modal-body p-0">
+                        <div class="user-card">
+                            <div class="user-avatar">
+                                {{ substr(auth()->user()->first_name, 0, 1) }}
+                            </div>
+                            <div class="user-info">
+                                <h5>{{ auth()->user()->full_name }}</h5>
+                                <p>Authenticated via Google</p>
+                            </div>
+                        </div>
+
+                        <form action="{{ route('auth.google.complete-setup') }}" method="POST">
+                            @csrf
+                            <div class="mb-3">
+                                <label class="form-label">School ID Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-card-text"></i></span>
+                                    <input type="text" name="school_id_number" class="form-control" placeholder="Enter your official ID number" required value="{{ old('school_id_number') }}">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Create Username</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-at"></i></span>
+                                    <input type="text" name="username" class="form-control" placeholder="Choose a unique username" required value="{{ old('username') }}">
+                                </div>
+                                <div class="field-hint">Lowercase letters, numbers, and underscores only</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Set Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                    <input type="password" name="password" class="form-control" placeholder="Create a secure password" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Confirm Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-shield-check"></i></span>
+                                    <input type="password" name="password_confirmation" class="form-control" placeholder="Re-type password" required>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn-create">
+                                <i class="bi bi-person-check-fill"></i> Complete Setup
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+    @endauth
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            @auth
+                @if(session('show_google_setup_modal') || !auth()->user()->username || !auth()->user()->profile_completed_at)
+                    var googleSetupModal = new bootstrap.Modal(document.getElementById('googleSetupModal'));
+                    googleSetupModal.show();
+                @endif
+            @endauth
+        });
+    </script>
     @yield('scripts')
 </body>
 </html>

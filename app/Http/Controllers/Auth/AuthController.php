@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
+use Laravel\Socialite\Facades\Socialite;
+use App\Http\Requests\Auth\CompleteGoogleSetupRequest;
 
 class AuthController extends Controller
 {
@@ -28,7 +31,7 @@ class AuthController extends Controller
         $validated = $request->validate([
             'first_name'       => 'required|string|max:100',
             'last_name'        => 'required|string|max:100',
-            'school_email'     => 'required|email|ends_with:@school.edu|unique:users,school_email',
+            'school_email'     => 'required|email|ends_with:@urios.edu.ph|unique:users,school_email',
             'school_id_number' => 'required|string|max:50|unique:users,school_id_number',
             'password'         => 'required|string|min:8|confirmed',
         ]);
@@ -203,5 +206,91 @@ class AuthController extends Controller
             'roles'            => $user->roles->pluck('name'),
             'permissions'      => $user->roles->flatMap->permissions->pluck('name')->unique()->values(),
         ]);
+    }
+
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->with(['prompt' => 'select_account'])->redirect();
+    }
+
+    public function handleGoogleCallback()
+    {
+        try {
+            $googleUser = Socialite::driver('google')->user();
+
+            // Validate domain
+            if (!Str::endsWith($googleUser->email, '@urios.edu.ph')) {
+                return redirect()->route('login')->with('error', 'Only @urios.edu.ph school emails are allowed.');
+            }
+
+            $user = User::where('google_id', $googleUser->id)->first();
+            $isNewGoogleUser = false;
+
+            if (!$user) {
+                $user = User::where('school_email', $googleUser->email)->first();
+
+                if ($user) {
+                    $user->update([
+                        'google_id' => $googleUser->id,
+                        'google_token' => $googleUser->token,
+                    ]);
+                } else {
+                    // Split full name from Google into first and last name
+                    $nameParts = explode(' ', $googleUser->name, 2);
+                    $firstName = $nameParts[0];
+                    $lastName = $nameParts[1] ?? '';
+
+                    $user = User::create([
+                        'first_name'   => $firstName,
+                        'last_name'    => $lastName,
+                        'school_email' => $googleUser->email,
+                        'google_id'    => $googleUser->id,
+                        'google_token' => $googleUser->token,
+                        'password'     => Hash::make(Str::random(24)),
+                    ]);
+
+                    // Assign student role by default
+                    $studentRole = Role::where('name', 'student')->first();
+                    if ($studentRole) {
+                        $user->assignRole($studentRole);
+                    }
+
+                    $isNewGoogleUser = true;
+                }
+            } else {
+                $user->update([
+                    'google_token' => $googleUser->token,
+                ]);
+            }
+
+            Auth::login($user);
+
+            if ($isNewGoogleUser || !$user->username) {
+                session(['show_google_setup_modal' => true]);
+                return redirect()->route('user.dashboard')->with('success', 'Welcome! Please complete your account setup.');
+            }
+
+            $isAdmin = $user->isAdmin();
+            $redirectUrl = $isAdmin ? '/admin/dashboard' : '/dashboard';
+
+            return redirect()->intended($redirectUrl)->with('success', 'Logged in with Google successfully!');
+        } catch (\Exception $e) {
+            Log::error('Google Auth Error: ' . $e->getMessage());
+            return redirect()->route('login')->with('error', 'Google authentication failed: ' . $e->getMessage());
+        }
+    }
+
+    public function completeGoogleSetup(CompleteGoogleSetupRequest $request)
+    {
+        $request->user()->update([
+            'school_id_number'     => $request->school_id_number,
+            'username'             => $request->username,
+            'password'             => Hash::make($request->password),
+            'profile_completed_at' => $request->user()->profile_completed_at ?? now(),
+        ]);
+
+        session()->forget('show_google_setup_modal');
+
+        return redirect()->route('user.dashboard')->with('success', 'Account setup completed successfully!');
     }
 }
