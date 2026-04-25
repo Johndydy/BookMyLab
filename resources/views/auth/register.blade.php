@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register — Lab Booking System</title>
+    <title>Register — BookMyLab</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -41,7 +41,7 @@
 <body>
     <div class="register-box">
         <div class="text-center mb-4">
-            <h1>Lab Booking</h1>
+            <h1>BookMyLab</h1>
             <p class="text-muted">Create Your Account</p>
         </div>
 

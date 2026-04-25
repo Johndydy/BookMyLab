@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab Booking System</title>
+    <title>BookMyLab</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -35,7 +35,7 @@
         <div class="mb-4">
             <i class="bi bi-flask" style="font-size: 3rem; color: #1a2e4a;"></i>
         </div>
-        <h1 class="mb-2">Lab Booking System</h1>
+        <h1 class="mb-2">BookMyLab</h1>
         <p class="text-muted mb-4">Book laboratory rooms and equipment with ease.</p>
         <div class="d-grid gap-3">
             <a href="{{ route('login') }}" class="btn btn-primary btn-lg">Login</a>

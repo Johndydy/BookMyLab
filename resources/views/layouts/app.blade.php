@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Lab Booking System')</title>
+    <title>@yield('title', 'BookMyLab')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
@@ -135,6 +135,13 @@
             font-size: 1.4rem;
             font-weight: bold;
             margin-right: 15px;
+            overflow: hidden;
+        }
+
+        #googleSetupModal .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         #googleSetupModal .user-info h5 {
@@ -214,7 +221,7 @@
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ route('user.dashboard') }}">
-                <i class="bi bi-flask"></i> Lab Booking
+                <i class="bi bi-flask"></i> BookMyLab
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -252,7 +259,12 @@
                         @endif
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                                <i class="bi bi-person-circle"></i> {{ auth()->user()->full_name }}
+                                @if(auth()->user()->avatar)
+                                    <img src="{{ auth()->user()->avatar }}" alt="{{ auth()->user()->full_name }}" style="width: 24px; height: 24px; border-radius: 50%; margin-right: 5px; object-fit: cover;">
+                                @else
+                                    <i class="bi bi-person-circle"></i>
+                                @endif
+                                {{ auth()->user()->full_name }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li>
@@ -324,7 +336,11 @@
                     <div class="modal-body p-0">
                         <div class="user-card">
                             <div class="user-avatar">
-                                {{ substr(auth()->user()->first_name, 0, 1) }}
+                                @if(auth()->user()->avatar)
+                                    <img src="{{ auth()->user()->avatar }}" alt="{{ auth()->user()->full_name }}">
+                                @else
+                                    {{ substr(auth()->user()->first_name, 0, 1) }}
+                                @endif
                             </div>
                             <div class="user-info">
                                 <h5>{{ auth()->user()->full_name }}</h5>

@@ -77,8 +77,8 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'school_email' => 'required|email',
-            'password'     => 'required|string',
+            'login'    => 'required|string',
+            'password' => 'required|string',
         ]);
 
         // Rate limiting — max 5 attempts per minute per IP
@@ -90,7 +90,11 @@ class AuthController extends Controller
             ], 429);
         }
 
-        $user = User::where('school_email', $request->school_email)->first();
+        $user = User::where(function($query) use ($request) {
+            $query->where('school_email', $request->login)
+                  ->orWhere('username', $request->login)
+                  ->orWhere('school_id_number', $request->login);
+        })->first();
 
         // Use Hash::check instead of Auth::attempt to work with custom primary key
         if (!$user || !Hash::check($request->password, $user->password)) {
@@ -131,8 +135,8 @@ class AuthController extends Controller
     public function loginWeb(Request $request)
     {
         $request->validate([
-            'school_email' => 'required|email',
-            'password'     => 'required|string',
+            'login'    => 'required|string',
+            'password' => 'required|string',
         ]);
 
         // Rate limiting — max 5 attempts per minute per IP
@@ -142,7 +146,11 @@ class AuthController extends Controller
             return back()->withErrors(['message' => "Too many login attempts. Try again in {$seconds} seconds."]);
         }
 
-        $user = User::where('school_email', $request->school_email)->first();
+        $user = User::where(function($query) use ($request) {
+            $query->where('school_email', $request->login)
+                  ->orWhere('username', $request->login)
+                  ->orWhere('school_id_number', $request->login);
+        })->first();
 
         // Use Hash::check instead of Auth::attempt to work with custom primary key
         if (!$user || !Hash::check($request->password, $user->password)) {
@@ -233,6 +241,7 @@ class AuthController extends Controller
                     $user->update([
                         'google_id' => $googleUser->id,
                         'google_token' => $googleUser->token,
+                        'avatar' => $googleUser->avatar,
                     ]);
                 } else {
                     // Split full name from Google into first and last name
@@ -246,6 +255,7 @@ class AuthController extends Controller
                         'school_email' => $googleUser->email,
                         'google_id'    => $googleUser->id,
                         'google_token' => $googleUser->token,
+                        'avatar'       => $googleUser->avatar,
                         'password'     => Hash::make(Str::random(24)),
                     ]);
 
@@ -260,6 +270,7 @@ class AuthController extends Controller
             } else {
                 $user->update([
                     'google_token' => $googleUser->token,
+                    'avatar' => $googleUser->avatar,
                 ]);
             }
 

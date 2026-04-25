@@ -21,6 +21,7 @@ class User extends Authenticatable
         'password',
         'google_id',
         'google_token',
+        'avatar',
         'phone_number',
         'student_id',
         'department_name',

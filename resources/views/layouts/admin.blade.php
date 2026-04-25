@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Admin Panel') — Lab Booking</title>
+    <title>@yield('title', 'Admin Panel') — BookMyLab</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
@@ -90,7 +90,7 @@
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ route('admin.dashboard') }}">
-                <i class="bi bi-shield-lock"></i> Lab Booking — Admin
+                <i class="bi bi-shield-lock"></i> BookMyLab — Admin
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -104,7 +104,12 @@
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-person-circle"></i> {{ auth()->user()->full_name }}
+                            @if(auth()->user()->avatar)
+                                <img src="{{ auth()->user()->avatar }}" alt="{{ auth()->user()->full_name }}" style="width: 24px; height: 24px; border-radius: 50%; margin-right: 5px; object-fit: cover;">
+                            @else
+                                <i class="bi bi-person-circle"></i>
+                            @endif
+                            {{ auth()->user()->full_name }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><hr class="dropdown-divider"></li>

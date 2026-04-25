@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login — Lab Booking System</title>
+    <title>Login — BookMyLab</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -40,7 +40,7 @@
 <body>
     <div class="login-box">
         <div class="text-center mb-4">
-            <h1>Lab Booking</h1>
+            <h1>BookMyLab</h1>
             <p class="text-muted">Student & Faculty Portal</p>
         </div>
 
@@ -54,14 +54,15 @@
         <form action="{{ route('login') }}" method="POST">
             @csrf
             <div class="mb-3">
-                <label for="school_email" class="form-label">School Email</label>
-                <input type="email"
-                       class="form-control @error('school_email') is-invalid @enderror"
-                       id="school_email"
-                       name="school_email"
-                       value="{{ old('school_email') }}"
+                <label for="login" class="form-label">Email, Username, or Student ID</label>
+                <input type="text"
+                       class="form-control @error('login') is-invalid @enderror"
+                       id="login"
+                       name="login"
+                       value="{{ old('login') }}"
+                       placeholder="Enter your login identifier"
                        required autofocus>
-                @error('school_email')
+                @error('login')
                     <div class="error-text">{{ $message }}</div>
                 @enderror
             </div>
