@@ -27,6 +27,31 @@
         margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
     }
     .hours-info i { font-size: 1.1rem; }
+    
+    @media (max-width: 767.98px) {
+        .form-control, .form-select, .input-group-text {
+            font-size: 0.875rem !important;
+            padding: 8px 12px !important;
+        }
+        .form-label {
+            font-size: 0.85rem !important;
+        }
+        .hours-info {
+            font-size: 0.78rem !important;
+            padding: 8px 10px !important;
+        }
+        .btn {
+            font-size: 0.9rem !important;
+            padding: 10px 16px !important;
+        }
+        .page-title {
+            font-size: 1.5rem !important;
+        }
+        h2 { font-size: 1.5rem !important; }
+        .container { padding-left: 10px !important; padding-right: 10px !important; }
+        .row { margin-left: -5px !important; margin-right: -5px !important; }
+        .row > [class*="col-"] { padding-left: 5px !important; padding-right: 5px !important; }
+    }
 </style>
 @endsection
 
@@ -85,13 +110,24 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="start_time_display" class="form-label">Start Date & Time <span class="text-danger">*</span></label>
-                            <input type="datetime-local"
-                                   class="form-control @error('start_time') is-invalid @enderror"
-                                   id="start_time_display" required>
+                            <label class="form-label">Start Date & Time <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input type="date" class="form-control" id="start_date" required style="flex: 2;">
+                                <select class="form-select" id="start_hour" required style="flex: 1;">
+                                    <option value="">time</option>
+                                    @for($h = 7; $h <= 17; $h++)
+                                        @php
+                                            $displayHour = $h > 12 ? $h - 12 : $h;
+                                            $ampm = $h >= 12 ? 'PM' : 'AM';
+                                            $value = str_pad($h, 2, '0', STR_PAD_LEFT) . ':00';
+                                        @endphp
+                                        <option value="{{ $value }}">{{ $displayHour }} {{ $ampm }}</option>
+                                    @endfor
+                                </select>
+                            </div>
                             <input type="hidden" id="start_time" name="start_time">
                             @error('start_time')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                             <div class="time-warning" id="start_time_warning">
                                 <i class="bi bi-exclamation-triangle-fill"></i>
@@ -170,38 +206,36 @@
 
 @section('scripts')
 <script>
-    // ── Set minimum date/time to RIGHT NOW ──
-    function setMinDateTime() {
+    // ── Set minimum date to TODAY ──
+    function setMinDate() {
         const now = new Date();
         const yyyy = now.getFullYear();
         const mm = String(now.getMonth() + 1).padStart(2, '0');
         const dd = String(now.getDate()).padStart(2, '0');
-        const hh = String(now.getHours()).padStart(2, '0');
-        const min = String(now.getMinutes()).padStart(2, '0');
-        document.getElementById('start_time_display').min = `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+        document.getElementById('start_date').min = `${yyyy}-${mm}-${dd}`;
     }
-    setMinDateTime();
-    // Refresh the min every minute so it stays current
-    setInterval(setMinDateTime, 60000);
+    setMinDate();
 
     // ── Validate time is within operating hours ──
     function validateStartTime() {
-        const input = document.getElementById('start_time_display');
+        const dateInput = document.getElementById('start_date');
+        const hourInput = document.getElementById('start_hour');
         const warning = document.getElementById('start_time_warning');
         const warningText = document.getElementById('start_time_warning_text');
 
-        if (!input.value) {
+        if (!dateInput.value || !hourInput.value) {
             warning.classList.remove('show');
             return true;
         }
 
-        const date = new Date(input.value);
+        const dateTimeStr = `${dateInput.value}T${hourInput.value}`;
+        const date = new Date(dateTimeStr);
         const hour = date.getHours();
         const dayOfWeek = date.getDay(); // 0=Sunday, 6=Saturday
 
         // Block Sunday
         if (dayOfWeek === 0) {
-            warningText.textContent = 'Bookings are not available on Sundays. Please select another day.';
+            warningText.textContent = 'Bookings are not available on Sundays.';
             warning.classList.add('show');
             return false;
         }
@@ -216,7 +250,7 @@
         } else {
             // Weekdays: 7 AM – 6 PM
             if (hour < 7 || hour >= 18) {
-                warningText.textContent = 'Start time must be between 7:00 AM and 6:00 PM. Please select a valid time.';
+                warningText.textContent = 'Start time must be between 7:00 AM and 6:00 PM.';
                 warning.classList.add('show');
                 return false;
             }
@@ -224,7 +258,7 @@
 
         // Check if it's in the past
         if (date <= new Date()) {
-            warningText.textContent = 'You cannot book a time in the past. Please select a future time.';
+            warningText.textContent = 'You cannot book a time in the past.';
             warning.classList.add('show');
             return false;
         }
@@ -235,13 +269,15 @@
 
     // ── Calculate end time and validate ──
     function calculateEndTime() {
-        const startInput = document.getElementById('start_time_display').value;
+        const dateInput = document.getElementById('start_date').value;
+        const hourInput = document.getElementById('start_hour').value;
         const hours = parseInt(document.getElementById('duration_hours').value) || 0;
         const endWarning = document.getElementById('end_time_warning');
         const endWarningText = document.getElementById('end_time_warning_text');
 
-        if (startInput && hours > 0) {
-            const startDate = new Date(startInput);
+        if (dateInput && hourInput && hours > 0) {
+            const dateTimeStr = `${dateInput}T${hourInput}`;
+            const startDate = new Date(dateTimeStr);
             const endDate = new Date(startDate);
             endDate.setHours(endDate.getHours() + hours);
 
@@ -250,13 +286,13 @@
 
             // Validate end time based on day
             if (endDay === 0) {
-                endWarningText.textContent = 'Booking cannot extend into Sunday. Please reduce the duration.';
+                endWarningText.textContent = 'Booking cannot extend into Sunday.';
                 endWarning.classList.add('show');
             } else if (endDay === 6 && (endHour > 12 || (endHour === 12 && endDate.getMinutes() > 0))) {
-                endWarningText.textContent = 'Saturday bookings must end by 12:00 PM. Please reduce the duration.';
+                endWarningText.textContent = 'Saturday bookings must end by 12:00 PM.';
                 endWarning.classList.add('show');
             } else if (endDay !== 6 && (endHour > 18 || (endHour === 18 && endDate.getMinutes() > 0) || endHour < 7)) {
-                endWarningText.textContent = 'End time exceeds 6:00 PM. Please reduce the duration.';
+                endWarningText.textContent = 'End time exceeds 6:00 PM.';
                 endWarning.classList.add('show');
             } else {
                 endWarning.classList.remove('show');
@@ -278,9 +314,11 @@
         }
     }
 
-    document.getElementById('start_time_display').addEventListener('change', function() {
-        validateStartTime();
-        calculateEndTime();
+    ['start_date', 'start_hour'].forEach(id => {
+        document.getElementById(id).addEventListener('change', function() {
+            validateStartTime();
+            calculateEndTime();
+        });
     });
     document.getElementById('duration_hours').addEventListener('input', calculateEndTime);
 
@@ -288,9 +326,10 @@
     document.getElementById('bookingForm').addEventListener('submit', function (e) {
         calculateEndTime();
 
-        const start = document.getElementById('start_time_display').value;
-        if (start) {
-            document.getElementById('start_time').value = start.replace('T', ' ');
+        const d = document.getElementById('start_date').value;
+        const h = document.getElementById('start_hour').value;
+        if (d && h) {
+            document.getElementById('start_time').value = `${d} ${h}`;
         }
 
         // Block submission if time is outside operating hours

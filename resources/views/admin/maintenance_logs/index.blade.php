@@ -1,5 +1,72 @@
 @extends('layouts.admin')
 @section('title', 'Maintenance Logs')
+
+@section('styles')
+<style>
+    @media (max-width: 767.98px) {
+        .mobile-table, .mobile-table tbody, .mobile-table tr, .mobile-table td {
+            display: block;
+            width: 100%;
+        }
+        .mobile-table thead {
+            display: none;
+        }
+        .mobile-table tr {
+            margin-bottom: 1rem;
+            border: 1px solid #dee2e6;
+            border-radius: var(--border-radius, 8px);
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .mobile-table td {
+            text-align: right;
+            padding-left: 45%;
+            position: relative;
+            border-bottom: 1px solid #f0f0f0;
+            border-top: none !important;
+            word-wrap: break-word;
+            min-height: 3rem;
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+        }
+        .mobile-table td:last-child {
+            border-bottom: 0;
+        }
+        .mobile-table td::before {
+            content: attr(data-label);
+            position: absolute;
+            left: 0;
+            top: 0.75rem;
+            width: 45%;
+            padding-left: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--dark-blue, #1a2e4a);
+        }
+        .mobile-table td.actions-cell {
+            padding-left: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+        .mobile-table td.actions-cell::before {
+            position: static;
+            width: auto;
+            padding-left: 0;
+            margin-right: auto;
+        }
+        .mobile-table td.empty-cell {
+            padding-left: 15px;
+            text-align: center;
+        }
+        .mobile-table td.empty-cell::before {
+            display: none;
+        }
+    }
+</style>
+@endsection
+
 @section('content')
 <div class="row mb-4">
     <div class="col-md-8"><h2>Laboratory Maintenance Logs</h2></div>
@@ -56,7 +123,7 @@
 </div>
 
 <div class="table-responsive">
-    <table class="table table-hover">
+    <table class="table table-hover mobile-table">
         <thead>
             <tr>
                 <th>Laboratory</th>
@@ -71,25 +138,25 @@
         <tbody>
             @forelse($logs as $log)
                 <tr>
-                    <td><strong>{{ $log->laboratory->name }}</strong></td>
-                    <td>{{ Str::limit($log->reason, 40) }}</td>
-                    <td>{{ $log->admin->full_name }}</td>
-                    <td>{{ $log->started_at->format('M d, Y g:i A') }}</td>
-                    <td>
+                    <td data-label="Laboratory"><strong>{{ $log->laboratory->name }}</strong></td>
+                    <td data-label="Reason">{{ Str::limit($log->reason, 40) }}</td>
+                    <td data-label="Started By">{{ $log->admin->full_name }}</td>
+                    <td data-label="Started At">{{ $log->started_at->format('M d, Y g:i A') }}</td>
+                    <td data-label="Ended At">
                         @if($log->ended_at)
                             {{ $log->ended_at->format('M d, Y g:i A') }}
                         @else
                             <span class="badge bg-danger">Ongoing</span>
                         @endif
                     </td>
-                    <td>
+                    <td data-label="Status">
                         @if(!$log->ended_at)
                             <span class="badge bg-warning text-dark">In Progress</span>
                         @else
                             <span class="badge bg-success">Completed</span>
                         @endif
                     </td>
-                    <td>
+                    <td data-label="Actions" class="actions-cell">
                         @if(!$log->ended_at)
                             <button class="btn btn-sm btn-success"
                                 data-bs-toggle="modal" data-bs-target="#endModal{{ $log->log_id }}">
@@ -125,7 +192,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="7" class="text-center text-muted py-4">No maintenance logs found.</td>
+                    <td colspan="7" class="text-center text-muted py-4 empty-cell">No maintenance logs found.</td>
                 </tr>
             @endforelse
         </tbody>

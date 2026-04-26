@@ -6,6 +6,7 @@
     <title>@yield('title', 'BookMyLab')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Chelsea+Market&family=Roboto:wght@500&display=swap" rel="stylesheet">
     <style>
         :root {
             --dark-blue: #1a2e4a;
@@ -26,18 +27,81 @@
         .navbar {
             background: linear-gradient(135deg, var(--dark-blue) 0%, var(--light-blue) 100%);
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            padding: 1rem 0;
+            padding: 0.75rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1050;
         }
         .navbar-brand {
             color: var(--white) !important;
+            font-family: "Chelsea Market", system-ui;
             font-weight: 700;
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
-        .nav-link { color: rgba(255,255,255,0.9) !important; margin: 0 8px; transition: all 0.3s ease; }
-        .nav-link:hover { color: var(--white) !important; }
+        .navbar-toggler {
+            border: none;
+            padding: 0.5rem;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.9%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+        }
+        .nav-link { 
+            color: rgba(255,255,255,0.85) !important; 
+            margin: 0 8px; 
+            transition: all 0.3s ease; 
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            border-radius: 6px;
+        }
+        .nav-link:hover { 
+            color: var(--white) !important; 
+            background: rgba(255,255,255,0.1);
+        }
+        @media (max-width: 991.98px) {
+            .navbar-collapse {
+                background: var(--dark-blue);
+                margin: 0;
+                padding: 1rem 0;
+                border-top: 1px solid rgba(255,255,255,0.1);
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+                max-height: 80vh;
+                overflow-y: auto;
+            }
+            .nav-link {
+                padding: 12px 20px !important;
+                margin: 0 !important;
+                border-radius: 0;
+                border-bottom: 1px solid rgba(255,255,255,0.05);
+            }
+            .dropdown-menu {
+                background: rgba(0,0,0,0.25) !important;
+                border: 1px solid rgba(255,255,255,0.1) !important;
+                margin: 0 !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+            }
+            .dropdown-item {
+                color: #ffffff !important;
+                padding: 12px 25px !important;
+                font-weight: 500;
+            }
+            .dropdown-item:hover {
+                background: rgba(255,255,255,0.1) !important;
+            }
+            .dropdown-divider {
+                border-top: 1px solid rgba(255,255,255,0.1) !important;
+                margin: 5px 0 !important;
+            }
+        }
         .main-content { flex: 1; padding: 30px 0; }
         .btn-primary {
             background: linear-gradient(135deg, var(--dark-blue) 0%, var(--light-blue) 100%);
@@ -73,6 +137,11 @@
             color: var(--white); text-align: center; padding: 20px; margin-top: auto; font-size: 0.9rem;
         }
         h1,h2,h3,h4,h5,h6 { color: var(--dark-blue); font-weight: 600; margin-bottom: 10px; }
+        h2, .page-title {
+            font-family: "Roboto", sans-serif !important;
+            font-weight: 500 !important;
+            font-style: normal;
+        }
         .page-title { font-size: 2rem; margin-bottom: 10px; }
         .page-subtitle { color: #6c757d; font-size: 1rem; margin-bottom: 30px; }
         .stat-card {
@@ -265,13 +334,13 @@
                             </li>
                         @endif
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
                                 @if(auth()->user()->avatar)
-                                    <img src="{{ auth()->user()->avatar }}" alt="{{ auth()->user()->full_name }}" style="width: 24px; height: 24px; border-radius: 50%; margin-right: 5px; object-fit: cover;">
+                                    <img src="{{ auth()->user()->avatar }}" alt="" referrerpolicy="no-referrer" style="width: 28px; height: 28px; border-radius: 50%; margin-right: 10px; object-fit: cover; border: 1.5px solid rgba(255,255,255,0.3);">
                                 @else
-                                    <i class="bi bi-person-circle"></i>
+                                    <i class="bi bi-person-circle" style="font-size: 1.2rem; margin-right: 8px;"></i>
                                 @endif
-                                {{ auth()->user()->full_name }}
+                                <span class="user-name-text">{{ auth()->user()->full_name }}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li>
