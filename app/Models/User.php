@@ -23,7 +23,6 @@ class User extends Authenticatable
         'google_token',
         'avatar',
         'phone_number',
-        'student_id',
         'department_name',
         'course',
         'year_level',
@@ -109,6 +108,19 @@ class User extends Authenticatable
             ->flatMap->permissions
             ->unique('permission_id')
             ->values();
+    }
+
+    // Helper: check if user has completed all required profile fields
+    public function hasCompletedProfile(): bool
+    {
+        return !empty($this->first_name) &&
+               !empty($this->last_name) &&
+               !empty($this->username) &&
+               !empty($this->school_id_number) &&
+               !empty($this->phone_number) &&
+               !empty($this->department_name) &&
+               !empty($this->course) &&
+               !empty($this->year_level);
     }
 
     // Helper: get full name

@@ -44,7 +44,7 @@
                                     </div>
                                     <div class="col-6">
                                         <small class="text-muted">Time</small>
-                                        <p>{{ $booking->start_time->format('H:i') }} - {{ $booking->end_time->format('H:i') }}</p>
+                                        <p>{{ $booking->start_time->format('g:i A') }} - {{ $booking->end_time->format('g:i A') }}</p>
                                     </div>
                                 </div>
                                 <small class="text-muted">Purpose</small>
@@ -87,7 +87,7 @@
                                     </div>
                                     <div class="col-6">
                                         <small class="text-muted">Time</small>
-                                        <p>{{ $booking->start_time->format('H:i') }} - {{ $booking->end_time->format('H:i') }}</p>
+                                        <p>{{ $booking->start_time->format('g:i A') }} - {{ $booking->end_time->format('g:i A') }}</p>
                                     </div>
                                 </div>
                                 <small class="text-muted">Purpose</small>

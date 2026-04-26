@@ -51,6 +51,7 @@
             background: linear-gradient(135deg, var(--dark-blue) 0%, var(--light-blue) 100%);
             color: var(--white); border-radius: var(--border-radius) var(--border-radius) 0 0; font-weight: 600;
         }
+        .card-header h1, .card-header h2, .card-header h3, .card-header h4, .card-header h5, .card-header h6 { color: var(--white); }
         .alert { border-radius: var(--border-radius); border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .form-control, .form-select {
             border: 1px solid #ddd; border-radius: var(--border-radius); padding: 10px 15px; transition: all 0.3s ease;
@@ -77,6 +78,12 @@
         .pagination .page-link { border-radius: var(--border-radius); border: 1px solid #ddd; color: var(--dark-blue); transition: all 0.3s ease; }
         .pagination .page-link:hover { background-color: var(--dark-blue); border-color: var(--dark-blue); color: var(--white); }
         .pagination .page-item.active .page-link { background-color: var(--dark-blue); border-color: var(--dark-blue); }
+        /* Status Badges */
+        .status-badge { padding: 5px 10px; font-weight: 600; font-size: 0.85rem; letter-spacing: 0.5px; }
+        .status-pending { background-color: rgba(52, 152, 219, 0.15); color: var(--accent); border: 1px solid rgba(52, 152, 219, 0.5); }
+        .status-approved { background-color: rgba(45, 74, 115, 0.15); color: var(--light-blue); border: 1px solid rgba(45, 74, 115, 0.5); }
+        .status-rejected { background-color: rgba(26, 46, 74, 0.15); color: var(--dark-blue); border: 1px solid rgba(26, 46, 74, 0.5); }
+        .status-cancelled { background-color: #f8f9fa; color: #6c757d; border: 1px solid #dee2e6; }
         @media (max-width: 768px) {
             .sidebar { width: 100%; padding-top: 0; }
             .container-wrapper { flex-direction: column; }

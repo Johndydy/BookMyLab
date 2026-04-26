@@ -57,7 +57,7 @@
                     </td>
                     <td>{{ $booking->laboratory->name }}</td>
                     <td>{{ $booking->start_time->format('M d, Y') }}</td>
-                    <td>{{ $booking->start_time->format('H:i') }} - {{ $booking->end_time->format('H:i') }}</td>
+                    <td>{{ $booking->start_time->format('g:i A') }} - {{ $booking->end_time->format('g:i A') }}</td>
                     <td>
                         <a href="{{ route('admin.bookings.index') }}?status=pending" class="btn btn-sm btn-primary">
                             <i class="bi bi-arrow-right"></i> Review

@@ -41,17 +41,17 @@
                     </td>
                     <td>{{ $booking->laboratory->name }}</td>
                     <td>{{ $booking->start_time->format('M d, Y') }}</td>
-                    <td>{{ $booking->start_time->format('H:i') }} - {{ $booking->end_time->format('H:i') }}</td>
+                    <td>{{ $booking->start_time->format('g:i A') }} - {{ $booking->end_time->format('g:i A') }}</td>
                     <td>{{ Str::limit($booking->purpose, 30) }}</td>
                     <td>
                         @if($booking->status === 'pending')
-                            <span class="badge bg-warning text-dark">Pending</span>
+                            <span class="badge status-badge status-pending">Pending</span>
                         @elseif($booking->status === 'approved')
-                            <span class="badge bg-success">Approved</span>
+                            <span class="badge status-badge status-approved">Approved</span>
                         @elseif($booking->status === 'rejected')
-                            <span class="badge bg-danger">Rejected</span>
+                            <span class="badge status-badge status-rejected">Rejected</span>
                         @else
-                            <span class="badge bg-secondary">Cancelled</span>
+                            <span class="badge status-badge status-cancelled">Cancelled</span>
                         @endif
                     </td>
                     <td>
@@ -79,7 +79,7 @@
                                                 <p class="text-muted">
                                                     Approving booking for <strong>{{ $booking->user->full_name }}</strong>
                                                     at <strong>{{ $booking->laboratory->name }}</strong>
-                                                    on {{ $booking->start_time->format('M d, Y H:i') }}.
+                                                    on {{ $booking->start_time->format('M d, Y g:i A') }}.
                                                 </p>
                                                 <div class="mb-3">
                                                     <label class="form-label">Remarks <span class="text-muted">(Optional)</span></label>

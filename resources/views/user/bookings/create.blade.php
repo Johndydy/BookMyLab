@@ -70,14 +70,22 @@
                             @enderror
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="end_time_display" class="form-label">End Date & Time <span class="text-danger">*</span></label>
-                            <input type="datetime-local"
-                                   class="form-control @error('end_time') is-invalid @enderror"
-                                   id="end_time_display" required>
+                            <label class="form-label">Duration <span class="text-danger">*</span></label>
+                            <div class="d-flex gap-2">
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="duration_days" min="0" value="0" required>
+                                    <span class="input-group-text">Days</span>
+                                </div>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="duration_hours" min="0" max="23" value="1" required>
+                                    <span class="input-group-text">Hours</span>
+                                </div>
+                            </div>
                             <input type="hidden" id="end_time" name="end_time">
                             @error('end_time')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
+                            <small class="text-muted mt-1 d-block" id="calculated_end_time_display"></small>
                         </div>
                     </div>
 
@@ -121,11 +129,38 @@
 
 @section('scripts')
 <script>
+    function calculateEndTime() {
+        const startInput = document.getElementById('start_time_display').value;
+        const days = parseInt(document.getElementById('duration_days').value) || 0;
+        const hours = parseInt(document.getElementById('duration_hours').value) || 0;
+        
+        if (startInput) {
+            const startDate = new Date(startInput);
+            startDate.setDate(startDate.getDate() + days);
+            startDate.setHours(startDate.getHours() + hours);
+            
+            const yyyy = startDate.getFullYear();
+            const mm = String(startDate.getMonth() + 1).padStart(2, '0');
+            const dd = String(startDate.getDate()).padStart(2, '0');
+            const hh = String(startDate.getHours()).padStart(2, '0');
+            const min = String(startDate.getMinutes()).padStart(2, '0');
+            
+            document.getElementById('end_time').value = `${yyyy}-${mm}-${dd} ${hh}:${min}`;
+            document.getElementById('calculated_end_time_display').textContent = `Ends on: ${startDate.toLocaleString([], {dateStyle: 'medium', timeStyle: 'short'})}`;
+        } else {
+            document.getElementById('end_time').value = '';
+            document.getElementById('calculated_end_time_display').textContent = '';
+        }
+    }
+
+    document.getElementById('start_time_display').addEventListener('change', calculateEndTime);
+    document.getElementById('duration_days').addEventListener('input', calculateEndTime);
+    document.getElementById('duration_hours').addEventListener('input', calculateEndTime);
+
     document.getElementById('bookingForm').addEventListener('submit', function () {
+        calculateEndTime();
         const start = document.getElementById('start_time_display').value;
-        const end = document.getElementById('end_time_display').value;
-        if (start) document.getElementById('start_time').value = start.replace('T', ' ') + ':00';
-        if (end) document.getElementById('end_time').value = end.replace('T', ' ') + ':00';
+        if (start) document.getElementById('start_time').value = start.replace('T', ' ');
     });
 
     document.getElementById('laboratory_id').addEventListener('change', function () {
@@ -172,6 +207,11 @@
                     qty.min = 1;
                     qty.max = item.quantity;
                     qty.placeholder = 'Qty';
+                    qty.disabled = true; // Disabled by default so it doesn't submit
+
+                    cb.addEventListener('change', function() {
+                        qty.disabled = !this.checked;
+                    });
 
                     wrapper.appendChild(cb);
                     wrapper.appendChild(label);

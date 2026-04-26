@@ -30,12 +30,22 @@ class BookingController extends Controller
 
     public function create()
     {
+        if (!auth()->user()->hasCompletedProfile()) {
+            return redirect()->route('user.profile.edit')
+                ->with('error', 'Please complete all required fields in your profile before booking a laboratory.');
+        }
+
         $laboratories = Laboratory::available()->get();
         return view('user.bookings.create', compact('laboratories'));
     }
 
     public function store(BookingRequest $request)
     {
+        if (!auth()->user()->hasCompletedProfile()) {
+            return redirect()->route('user.profile.edit')
+                ->with('error', 'Please complete all required fields in your profile before booking a laboratory.');
+        }
+
         try {
             $this->bookingService->create(
                 $request->validated(),

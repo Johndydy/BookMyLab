@@ -29,7 +29,7 @@
                 <tr>
                     <td>{{ $booking->laboratory->name }}</td>
                     <td>{{ $booking->start_time->format('M d, Y') }}</td>
-                    <td>{{ $booking->start_time->format('H:i') }} - {{ $booking->end_time->format('H:i') }}</td>
+                    <td>{{ $booking->start_time->format('g:i A') }} - {{ $booking->end_time->format('g:i A') }}</td>
                     <td>{{ Str::limit($booking->purpose, 40) }}</td>
                     <td>
                         @if($booking->status === 'pending')

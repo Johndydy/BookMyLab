@@ -32,10 +32,10 @@
                     </td>
                     <td>{{ $log->booking->laboratory->name }}</td>
                     <td>{{ $log->quantity_borrowed }}</td>
-                    <td>{{ $log->borrowed_at->format('M d, Y H:i') }}</td>
+                    <td>{{ $log->borrowed_at->format('M d, Y g:i A') }}</td>
                     <td>
                         @if($log->returned_at)
-                            {{ $log->returned_at->format('M d, Y H:i') }}
+                            {{ $log->returned_at->format('M d, Y g:i A') }}
                         @else
                             <span class="badge bg-warning text-dark">Not Returned</span>
                         @endif

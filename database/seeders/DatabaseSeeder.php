@@ -72,46 +72,21 @@ class DatabaseSeeder extends Seeder
 
         // Create admin user
         // FIXED: uses first_name/last_name and school_id_number instead of name/role
-        $admin = User::firstOrCreate(
+        $admin = User::updateOrCreate(
             ['school_email' => 'admin@school.edu'],
             [
                 'first_name'       => 'Admin',
                 'last_name'        => 'User',
+                'username'         => 'admin',
                 'school_id_number' => 'ADMIN-001',
-                'password'         => Hash::make('password123'),
+                'password'         => Hash::make('password'),
             ]
         );
         if (!$admin->hasRole('administrator')) {
             $admin->assignRole($adminRole);
         }
 
-        // Create test user: John
-        $john = User::firstOrCreate(
-            ['school_email' => 'john@school.edu'],
-            [
-                'first_name'       => 'John',
-                'last_name'        => 'Doe',
-                'school_id_number' => 'STU-001',
-                'password'         => Hash::make('password123'),
-            ]
-        );
-        if (!$john->hasRole('student')) {
-            $john->assignRole($studentRole);
-        }
 
-        // Create test user: Jane
-        $jane = User::firstOrCreate(
-            ['school_email' => 'jane@school.edu'],
-            [
-                'first_name'       => 'Jane',
-                'last_name'        => 'Smith',
-                'school_id_number' => 'STU-002',
-                'password'         => Hash::make('password123'),
-            ]
-        );
-        if (!$jane->hasRole('student')) {
-            $jane->assignRole($studentRole);
-        }
 
         // Create department
         $dept = Department::firstOrCreate(

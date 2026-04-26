@@ -74,10 +74,10 @@
                     <td><strong>{{ $log->laboratory->name }}</strong></td>
                     <td>{{ Str::limit($log->reason, 40) }}</td>
                     <td>{{ $log->admin->full_name }}</td>
-                    <td>{{ $log->started_at->format('M d, Y H:i') }}</td>
+                    <td>{{ $log->started_at->format('M d, Y g:i A') }}</td>
                     <td>
                         @if($log->ended_at)
-                            {{ $log->ended_at->format('M d, Y H:i') }}
+                            {{ $log->ended_at->format('M d, Y g:i A') }}
                         @else
                             <span class="badge bg-danger">Ongoing</span>
                         @endif

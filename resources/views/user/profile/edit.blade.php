@@ -62,7 +62,9 @@
                                 <label class="form-label">Phone Number</label>
                                 <input type="text" name="phone_number"
                                     class="form-control @error('phone_number') is-invalid @enderror"
-                                    value="{{ old('phone_number', $user->phone_number) }}">
+                                    value="{{ old('phone_number', $user->phone_number) }}"
+                                    maxlength="11"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '');">
                                 @error('phone_number') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                         </div>
@@ -71,14 +73,7 @@
                         <h5 class="mb-3">Academic Information</h5>
 
                         <div class="row mb-4">
-                            <div class="col-md-6">
-                                <label class="form-label">Student ID (Internal)</label>
-                                <input type="text" name="student_id"
-                                    class="form-control @error('student_id') is-invalid @enderror"
-                                    value="{{ old('student_id', $user->student_id) }}">
-                                @error('student_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                            </div>
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <label class="form-label">Department</label>
                                 <input type="text" name="department_name"
                                     class="form-control @error('department_name') is-invalid @enderror"
@@ -109,7 +104,7 @@
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label">Bio</label>
+                            <label class="form-label">Bio <span class="text-muted small">(Optional)</span></label>
                             <textarea name="bio" class="form-control @error('bio') is-invalid @enderror"
                                 rows="3">{{ old('bio', $user->bio) }}</textarea>
                             @error('bio') <div class="invalid-feedback">{{ $message }}</div> @enderror

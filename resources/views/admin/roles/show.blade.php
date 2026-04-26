@@ -22,7 +22,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="text-muted">Created</label>
-                        <p class="mb-0">{{ $role->created_at->format('M d, Y H:i') }}</p>
+                        <p class="mb-0">{{ $role->created_at->format('M d, Y g:i A') }}</p>
                     </div>
                 </div>
                 <div class="mb-3">

@@ -30,17 +30,17 @@
                 <tr>
                     <td><strong>{{ $booking->laboratory->name }}</strong></td>
                     <td>{{ $booking->start_time->format('M d, Y') }}</td>
-                    <td>{{ $booking->start_time->format('H:i') }} - {{ $booking->end_time->format('H:i') }}</td>
+                    <td>{{ $booking->start_time->format('g:i A') }} - {{ $booking->end_time->format('g:i A') }}</td>
                     <td>{{ Str::limit($booking->purpose, 40) }}</td>
                     <td>
                         @if($booking->status === 'pending')
-                            <span class="badge bg-warning text-dark">Pending</span>
+                            <span class="badge status-badge status-pending">Pending</span>
                         @elseif($booking->status === 'approved')
-                            <span class="badge bg-success">Approved</span>
+                            <span class="badge status-badge status-approved">Approved</span>
                         @elseif($booking->status === 'rejected')
-                            <span class="badge bg-danger">Rejected</span>
+                            <span class="badge status-badge status-rejected">Rejected</span>
                         @else
-                            <span class="badge bg-secondary">Cancelled</span>
+                            <span class="badge status-badge status-cancelled">Cancelled</span>
                         @endif
                     </td>
                     <td>
@@ -48,7 +48,7 @@
                             <form action="{{ route('user.bookings.destroy', $booking) }}" method="POST" style="display:inline;">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger"
+                                <button type="submit" class="btn btn-sm btn-outline-primary"
                                     onclick="return confirm('Are you sure you want to cancel this booking?')">
                                     <i class="bi bi-trash"></i> Cancel
                                 </button>

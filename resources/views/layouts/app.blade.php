@@ -55,6 +55,7 @@
             background: linear-gradient(135deg, var(--dark-blue) 0%, var(--light-blue) 100%);
             color: var(--white); border-radius: var(--border-radius) var(--border-radius) 0 0; font-weight: 600;
         }
+        .card-header h1, .card-header h2, .card-header h3, .card-header h4, .card-header h5, .card-header h6 { color: var(--white); }
         .alert { border-radius: var(--border-radius); border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .form-control, .form-select {
             border: 1px solid #ddd; border-radius: var(--border-radius);
@@ -83,6 +84,12 @@
         .pagination .page-link { border-radius: var(--border-radius); border: 1px solid #ddd; color: var(--dark-blue); transition: all 0.3s ease; }
         .pagination .page-link:hover { background-color: var(--dark-blue); border-color: var(--dark-blue); color: var(--white); }
         .pagination .page-item.active .page-link { background-color: var(--dark-blue); border-color: var(--dark-blue); }
+        /* Status Badges */
+        .status-badge { padding: 5px 10px; font-weight: 600; font-size: 0.85rem; letter-spacing: 0.5px; }
+        .status-pending { background-color: rgba(52, 152, 219, 0.15); color: var(--accent); border: 1px solid rgba(52, 152, 219, 0.5); }
+        .status-approved { background-color: rgba(45, 74, 115, 0.15); color: var(--light-blue); border: 1px solid rgba(45, 74, 115, 0.5); }
+        .status-rejected { background-color: rgba(26, 46, 74, 0.15); color: var(--dark-blue); border: 1px solid rgba(26, 46, 74, 0.5); }
+        .status-cancelled { background-color: #f8f9fa; color: #6c757d; border: 1px solid #dee2e6; }
         /* Google Setup Modal Styles */
         #googleSetupModal .modal-content {
             border: none;
@@ -291,6 +298,18 @@
 
     <div class="main-content">
         <div class="container">
+            @auth
+                @if(!auth()->user()->hasCompletedProfile() && !request()->routeIs('user.profile.edit'))
+                    <div class="alert alert-warning d-flex align-items-center mb-4 shadow-sm" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill flex-shrink-0 me-3" style="font-size: 1.5rem; color: #856404;"></i>
+                        <div>
+                            <strong>Action Required:</strong> You haven't fully completed your account settings. 
+                            <a href="{{ route('user.profile.edit') }}" class="alert-link text-decoration-underline">Click here to complete your profile</a> so you can start booking laboratories.
+                        </div>
+                    </div>
+                @endif
+            @endauth
+
             @if($errors->any())
                 <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
                     <strong><i class="bi bi-exclamation-circle"></i> Please fix the following errors:</strong>
