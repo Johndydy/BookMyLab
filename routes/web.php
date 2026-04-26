@@ -25,7 +25,7 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'loginWeb']);
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/logout', [AuthController::class, 'logoutWeb'])->name('logout')->middleware('auth');
+Route::match(['get', 'post'], '/logout', [AuthController::class, 'logoutWeb'])->name('logout')->middleware('auth');
 
 // Google Auth Routes
 Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google');

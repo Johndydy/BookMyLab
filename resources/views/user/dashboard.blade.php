@@ -78,15 +78,15 @@
     </div>
 </div>
 
-<div class="row mb-5">
-    <div class="col-md-6 mb-3">
-        <a href="{{ route('user.bookings.create') }}" class="btn btn-primary btn-lg w-100 py-3">
-            <i class="bi bi-plus-circle"></i> Book a Laboratory
+<div class="row mb-5 g-2">
+    <div class="col-6">
+        <a href="{{ route('user.bookings.create') }}" class="btn btn-primary w-100">
+            <i class="bi bi-plus-circle"></i> Book a Lab
         </a>
     </div>
-    <div class="col-md-6 mb-3">
-        <a href="{{ route('user.bookings.index') }}" class="btn btn-outline-primary btn-lg w-100 py-3">
-            <i class="bi bi-calendar-check"></i> View All Bookings
+    <div class="col-6">
+        <a href="{{ route('user.bookings.index') }}" class="btn btn-outline-primary w-100">
+            <i class="bi bi-calendar-check"></i> My Bookings
         </a>
     </div>
 </div>
