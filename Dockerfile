@@ -36,8 +36,13 @@ RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 # Copy Nginx configuration
 COPY ./nginx.conf /etc/nginx/sites-available/default
 
-# Expose port 80
+# Copy startup script
+COPY start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
+
+# Expose port (Railway will override this with $PORT)
 EXPOSE 80
 
-# Start Nginx and PHP-FPM
-CMD service nginx start && php-fpm
+# Use the startup script
+CMD ["/usr/local/bin/start.sh"]
+
