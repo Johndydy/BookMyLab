@@ -75,11 +75,11 @@ class DatabaseSeeder extends Seeder
         $admin = User::updateOrCreate(
             ['school_email' => 'admin@school.edu'],
             [
-                'first_name'       => 'Admin',
-                'last_name'        => 'User',
-                'username'         => 'admin',
-                'school_id_number' => 'ADMIN-001',
-                'password'         => Hash::make('password'),
+                'first_name'        => 'Admin',
+                'last_name'         => 'User',
+                'username'          => 'admin',
+                'student_id_number' => 'ADMIN-001',
+                'password'          => Hash::make('password'),
             ]
         );
         if (!$admin->hasRole('administrator')) {

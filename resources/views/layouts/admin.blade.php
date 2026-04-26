@@ -16,35 +16,62 @@
             --border-radius: 8px;
         }
         * { margin: 0; padding: 0; }
-        html, body { height: 100%; }
+        html, body { height: 100%; overflow: hidden; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--light-gray); }
-        .wrapper { display: flex; min-height: 100vh; flex-direction: column; }
+        .wrapper { display: flex; height: 100vh; flex-direction: column; overflow: hidden; }
         .navbar {
             background: linear-gradient(135deg, var(--dark-blue) 0%, var(--light-blue) 100%);
             box-shadow: 0 4px 12px rgba(0,0,0,0.15); padding: 1rem 0;
+            z-index: 1050;
         }
         .navbar-brand { color: var(--white) !important; font-weight: 700; font-size: 1.3rem; display: flex; align-items: center; gap: 8px; }
         .nav-link { color: rgba(255,255,255,0.9) !important; margin: 0 8px; transition: all 0.3s ease; }
         .nav-link:hover { color: var(--white) !important; }
-        .container-wrapper { display: flex; flex: 1; }
+        .container-wrapper { display: flex; flex: 1; overflow: hidden; }
         .sidebar {
             background: linear-gradient(180deg, var(--dark-blue) 0%, var(--light-blue) 100%);
             width: 250px; padding-top: 20px; box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            z-index: 1000;
         }
+        /* Custom scrollbar for sidebar */
+        .sidebar::-webkit-scrollbar { width: 6px; }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+        
         .sidebar .nav-link {
-            color: rgba(255,255,255,0.9) !important; padding: 14px 20px 14px 24px;
+            color: rgba(255,255,255,0.85) !important; padding: 14px 20px 14px 24px;
             margin-bottom: 4px; border-left: 4px solid transparent;
-            text-decoration: none; transition: all 0.3s ease; display: flex; align-items: center; gap: 10px;
+            text-decoration: none; transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease; display: flex; align-items: center; gap: 10px;
+            position: relative; overflow: hidden;
+            opacity: 0; /* For GSAP */
+            transform: translateX(-20px); /* For GSAP */
         }
-        .sidebar .nav-link i { font-size: 1.1rem; width: 20px; }
-        .sidebar .nav-link:hover { background-color: rgba(255,255,255,0.1); border-left-color: var(--accent); color: var(--white) !important; }
-        .sidebar .nav-link.active { background-color: rgba(255,255,255,0.15); border-left-color: var(--accent); color: var(--white) !important; font-weight: 600; }
+        .sidebar .nav-link i { font-size: 1.1rem; width: 20px; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .sidebar .nav-link:hover { background-color: rgba(255,255,255,0.08); color: var(--white) !important; }
+        .sidebar .nav-link:hover i { transform: scale(1.15); }
+        .sidebar .nav-link.active { background-color: rgba(255,255,255,0.12); border-left-color: var(--accent); color: var(--white) !important; font-weight: 600; }
+        .sidebar .nav-link::after { /* Apple-like active background glow */
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, rgba(52,152,219,0.1) 0%, transparent 100%);
+            opacity: 0; transition: opacity 0.4s ease; pointer-events: none;
+        }
+        .sidebar .nav-link.active::after { opacity: 1; }
         .main-content { flex: 1; padding: 30px; overflow-y: auto; }
         .btn-primary {
             background: linear-gradient(135deg, var(--dark-blue) 0%, var(--light-blue) 100%);
             border: none; border-radius: var(--border-radius); font-weight: 600; transition: all 0.3s ease;
         }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(26,46,74,0.3); }
+        .btn-approve {
+            background-color: var(--light-blue); color: var(--white); border: none;
+            border-radius: var(--border-radius); font-weight: 600; transition: all 0.3s ease;
+        }
+        .btn-approve:hover { background-color: var(--dark-blue); color: var(--white); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(45,74,115,0.3); }
+        .btn-reject {
+            background-color: var(--white); color: var(--dark-blue); border: 1px solid var(--dark-blue);
+            border-radius: var(--border-radius); font-weight: 600; transition: all 0.3s ease;
+        }
+        .btn-reject:hover { background-color: var(--dark-blue); color: var(--white); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(26,46,74,0.2); }
         .card { border: none; border-radius: var(--border-radius); box-shadow: 0 2px 12px rgba(0,0,0,0.08); transition: all 0.3s ease; margin-bottom: 20px; }
         .card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.12); transform: translateY(-2px); }
         .card-header {
@@ -104,11 +131,6 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('user.dashboard') }}">
-                            <i class="bi bi-arrow-left"></i> Back to User
-                        </a>
-                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
                             @if(auth()->user()->avatar)
@@ -200,12 +222,33 @@
             @yield('content')
         </div>
     </div>
-
-    <footer>
-        <p>&copy; {{ date('Y') }} School Laboratory Booking System. All rights reserved.</p>
-    </footer>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", (event) => {
+        // Apple-like smooth staggered entrance for sidebar links
+        gsap.to(".sidebar .nav-link", {
+            opacity: 1,
+            x: 0,
+            duration: 0.8,
+            stagger: 0.05,
+            ease: "power3.out",
+            delay: 0.1
+        });
+        
+        // Add subtle hover animation for main content cards
+        const cards = document.querySelectorAll('.card, .stat-card');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                gsap.to(card, { y: -4, duration: 0.3, ease: "power2.out" });
+            });
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, { y: 0, duration: 0.3, ease: "power2.out" });
+            });
+        });
+    });
+</script>
 @yield('scripts')
 </body>
 </html>

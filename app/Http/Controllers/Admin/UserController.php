@@ -21,7 +21,7 @@ class UserController extends Controller
                 $q->where('first_name', 'like', "%{$search}%")
                   ->orWhere('last_name', 'like', "%{$search}%")
                   ->orWhere('school_email', 'like', "%{$search}%")
-                  ->orWhere('school_id_number', 'like', "%{$search}%");
+                  ->orWhere('student_id_number', 'like', "%{$search}%");
             });
         }
 

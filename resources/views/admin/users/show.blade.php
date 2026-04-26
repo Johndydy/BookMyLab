@@ -8,7 +8,7 @@
         </a>
         <h2>{{ $user->full_name }}'s Bookings</h2>
         <p class="text-muted">
-            {{ $user->school_email }} &middot; ID: {{ $user->school_id_number }}
+            {{ $user->school_email }} &middot; ID: {{ $user->student_id_number }}
         </p>
     </div>
 </div>

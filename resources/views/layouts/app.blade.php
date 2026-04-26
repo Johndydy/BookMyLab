@@ -370,10 +370,10 @@
                         <form action="{{ route('auth.google.complete-setup') }}" method="POST">
                             @csrf
                             <div class="mb-3">
-                                <label class="form-label">School ID Number</label>
+                                <label class="form-label">Student ID Number</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-card-text"></i></span>
-                                    <input type="text" name="school_id_number" class="form-control" placeholder="Enter your official ID number" required value="{{ old('school_id_number') }}">
+                                    <input type="text" name="student_id_number" class="form-control" placeholder="Enter your official ID number" required value="{{ old('student_id_number') }}">
                                 </div>
                             </div>
 

@@ -32,7 +32,7 @@ class AuthController extends Controller
             'first_name'       => 'required|string|max:100',
             'last_name'        => 'required|string|max:100',
             'school_email'     => 'required|email|ends_with:@urios.edu.ph|unique:users,school_email',
-            'school_id_number' => 'required|string|max:50|unique:users,school_id_number',
+            'student_id_number' => 'required|string|max:50|unique:users,student_id_number',
             'password'         => 'required|string|min:8|confirmed',
         ]);
 
@@ -40,7 +40,7 @@ class AuthController extends Controller
             'first_name'       => $validated['first_name'],
             'last_name'        => $validated['last_name'],
             'school_email'     => $validated['school_email'],
-            'school_id_number' => $validated['school_id_number'],
+            'student_id_number' => $validated['student_id_number'],
             // Never store plain text — always hash passwords
             'password'         => Hash::make($validated['password']),
         ]);
@@ -62,7 +62,7 @@ class AuthController extends Controller
                 'user_id'          => $user->user_id,
                 'full_name'        => $user->full_name,
                 'school_email'     => $user->school_email,
-                'school_id_number' => $user->school_id_number,
+                'student_id_number' => $user->student_id_number,
                 'roles'            => $user->roles->pluck('name'),
                 'permissions'      => $permissions,
                 'is_admin'         => $isAdmin,
@@ -93,7 +93,7 @@ class AuthController extends Controller
         $user = User::where(function($query) use ($request) {
             $query->where('school_email', $request->login)
                   ->orWhere('username', $request->login)
-                  ->orWhere('school_id_number', $request->login);
+                  ->orWhere('student_id_number', $request->login);
         })->first();
 
         // Use Hash::check instead of Auth::attempt to work with custom primary key
@@ -120,7 +120,7 @@ class AuthController extends Controller
                 'user_id'          => $user->user_id,
                 'full_name'        => $user->full_name,
                 'school_email'     => $user->school_email,
-                'school_id_number' => $user->school_id_number,
+                'student_id_number' => $user->student_id_number,
                 'roles'            => $user->roles->pluck('name'),
                 'permissions'      => $permissions,
                 'is_admin'         => $isAdmin,
@@ -149,7 +149,7 @@ class AuthController extends Controller
         $user = User::where(function($query) use ($request) {
             $query->where('school_email', $request->login)
                   ->orWhere('username', $request->login)
-                  ->orWhere('school_id_number', $request->login);
+                  ->orWhere('student_id_number', $request->login);
         })->first();
 
         // Use Hash::check instead of Auth::attempt to work with custom primary key
@@ -210,7 +210,7 @@ class AuthController extends Controller
             'user_id'          => $user->user_id,
             'full_name'        => $user->full_name,
             'school_email'     => $user->school_email,
-            'school_id_number' => $user->school_id_number,
+            'student_id_number' => $user->student_id_number,
             'roles'            => $user->roles->pluck('name'),
             'permissions'      => $user->roles->flatMap->permissions->pluck('name')->unique()->values(),
         ]);
@@ -294,7 +294,7 @@ class AuthController extends Controller
     public function completeGoogleSetup(CompleteGoogleSetupRequest $request)
     {
         $request->user()->update([
-            'school_id_number'     => $request->school_id_number,
+            'student_id_number'     => $request->student_id_number,
             'username'             => $request->username,
             'password'             => Hash::make($request->password),
             'profile_completed_at' => $request->user()->profile_completed_at ?? now(),

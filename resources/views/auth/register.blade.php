@@ -94,12 +94,12 @@
             </div>
 
             <div class="mb-3">
-                <label for="school_id_number" class="form-label">School ID Number</label>
+                <label for="student_id_number" class="form-label">Student ID Number</label>
                 <input type="text"
-                       class="form-control @error('school_id_number') is-invalid @enderror"
-                       id="school_id_number" name="school_id_number"
-                       value="{{ old('school_id_number') }}" required>
-                @error('school_id_number')
+                       class="form-control @error('student_id_number') is-invalid @enderror"
+                       id="student_id_number" name="student_id_number"
+                       value="{{ old('student_id_number') }}" required>
+                @error('student_id_number')
                     <div class="error-text">{{ $message }}</div>
                 @enderror
             </div>

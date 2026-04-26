@@ -52,11 +52,11 @@
 
                         <div class="row mb-4">
                             <div class="col-md-6">
-                                <label class="form-label">School ID Number</label>
-                                <input type="text" name="school_id_number"
-                                    class="form-control @error('school_id_number') is-invalid @enderror"
-                                    value="{{ old('school_id_number', $user->school_id_number) }}" required>
-                                @error('school_id_number') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                <label class="form-label">Student ID Number</label>
+                                <input type="text" name="student_id_number"
+                                    class="form-control @error('student_id_number') is-invalid @enderror"
+                                    value="{{ old('student_id_number', $user->student_id_number) }}" required>
+                                @error('student_id_number') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Phone Number</label>
@@ -77,6 +77,7 @@
                                 <label class="form-label">Department</label>
                                 <input type="text" name="department_name"
                                     class="form-control @error('department_name') is-invalid @enderror"
+                                    style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()"
                                     value="{{ old('department_name', $user->department_name) }}">
                                 @error('department_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
@@ -86,6 +87,7 @@
                             <div class="col-md-6">
                                 <label class="form-label">Course</label>
                                 <input type="text" name="course" class="form-control @error('course') is-invalid @enderror"
+                                    style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()"
                                     value="{{ old('course', $user->course) }}">
                                 @error('course') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>

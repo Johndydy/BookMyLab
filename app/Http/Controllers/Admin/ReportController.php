@@ -17,8 +17,11 @@ class ReportController extends Controller
             ->orderBy('bookings_count', 'desc')
             ->first();
 
+        $driver = DB::connection()->getDriverName();
+        $hourExp = $driver === 'sqlite' ? "strftime('%H', start_time)" : 'HOUR(start_time)';
+
         $busiestSlots = DB::table('bookings')
-            ->selectRaw('HOUR(start_time) as hour, COUNT(*) as count')
+            ->selectRaw("{$hourExp} as hour, COUNT(*) as count")
             ->where('status', 'approved')
             ->groupBy('hour')
             ->orderBy('count', 'desc')
@@ -30,10 +33,13 @@ class ReportController extends Controller
             ->limit(5)
             ->get();
 
-        // Fixed: use first_name + last_name instead of name
+        $concatExp = $driver === 'sqlite' 
+            ? "users.first_name || ' ' || users.last_name" 
+            : "CONCAT(users.first_name, ' ', users.last_name)";
+
         $topBookers = DB::table('users')
             ->join('bookings', 'users.user_id', '=', 'bookings.user_id')
-            ->selectRaw('users.user_id, CONCAT(users.first_name, " ", users.last_name) as full_name, users.school_email, COUNT(*) as booking_count')
+            ->selectRaw("users.user_id, {$concatExp} as full_name, users.school_email, COUNT(*) as booking_count")
             ->groupBy('users.user_id', 'users.first_name', 'users.last_name', 'users.school_email')
             ->orderBy('booking_count', 'desc')
             ->limit(10)

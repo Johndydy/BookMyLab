@@ -17,7 +17,7 @@ class User extends Authenticatable
         'last_name',
         'username',
         'school_email',
-        'school_id_number',
+        'student_id_number',
         'password',
         'google_id',
         'google_token',
@@ -116,7 +116,7 @@ class User extends Authenticatable
         return !empty($this->first_name) &&
                !empty($this->last_name) &&
                !empty($this->username) &&
-               !empty($this->school_id_number) &&
+               !empty($this->student_id_number) &&
                !empty($this->phone_number) &&
                !empty($this->department_name) &&
                !empty($this->course) &&

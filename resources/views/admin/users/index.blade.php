@@ -12,7 +12,7 @@
         <form action="{{ route('admin.users.index') }}" method="GET" class="row g-3">
             <div class="col-md-10">
                 <input type="text" name="search" class="form-control"
-                    placeholder="Search by name, email, or school ID..."
+                    placeholder="Search by name, email, or student ID..."
                     value="{{ request('search') }}">
             </div>
             <div class="col-md-2">
@@ -27,7 +27,7 @@
         <thead>
             <tr>
                 <th>Name</th>
-                <th>School ID</th>
+                <th>Student ID</th>
                 <th>Email</th>
                 <th>Total Bookings</th>
                 <th>Joined</th>
@@ -38,7 +38,7 @@
             @forelse($users as $user)
                 <tr>
                     <td><strong>{{ $user->full_name }}</strong></td>
-                    <td><small class="text-muted">{{ $user->school_id_number }}</small></td>
+                    <td><small class="text-muted">{{ $user->student_id_number }}</small></td>
                     <td>{{ $user->school_email }}</td>
                     <td>{{ $user->bookings_count }}</td>
                     <td>{{ $user->created_at->format('M d, Y') }}</td>

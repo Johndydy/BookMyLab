@@ -18,7 +18,7 @@
         <form action="{{ route('admin.user-roles.index') }}" method="GET" class="row g-3">
             <div class="col-md-10">
                 <input type="text" name="search" class="form-control"
-                    placeholder="Search by name, email, or school ID..."
+                    placeholder="Search by name, email, or student ID..."
                     value="{{ request('search') }}">
             </div>
             <div class="col-md-2">
@@ -34,7 +34,7 @@
             <tr>
                 <th>User Name</th>
                 <th>School Email</th>
-                <th>School ID</th>
+                <th>Student ID</th>
                 <th>Current Roles</th>
                 <th>Actions</th>
             </tr>
@@ -44,7 +44,7 @@
                 <tr>
                     <td><strong>{{ $user->full_name }}</strong></td>
                     <td>{{ $user->school_email }}</td>
-                    <td><small class="text-muted">{{ $user->school_id_number }}</small></td>
+                    <td><small class="text-muted">{{ $user->student_id_number }}</small></td>
                     <td>
                         @forelse($user->roles as $role)
                             <span class="badge bg-info">{{ $role->name }}</span>

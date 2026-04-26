@@ -33,7 +33,7 @@ Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallbac
 Route::post('/auth/google/complete-setup', [AuthController::class, 'completeGoogleSetup'])->name('auth.google.complete-setup')->middleware('auth');
 
 // User Routes
-Route::middleware('auth')->name('user.')->group(function () {
+Route::middleware(['auth', 'user'])->name('user.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');

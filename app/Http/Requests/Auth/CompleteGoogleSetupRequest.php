@@ -17,11 +17,11 @@ class CompleteGoogleSetupRequest extends FormRequest
         $userId = $this->user()->user_id;
 
         return [
-            'school_id_number' => [
+            'student_id_number' => [
                 'required',
                 'string',
                 'max:50',
-                Rule::unique('users', 'school_id_number')->ignore($userId, 'user_id'),
+                Rule::unique('users', 'student_id_number')->ignore($userId, 'user_id'),
             ],
             'username' => [
                 'required',

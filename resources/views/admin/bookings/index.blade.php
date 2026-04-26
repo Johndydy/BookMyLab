@@ -56,11 +56,11 @@
                     </td>
                     <td>
                         @if($booking->status === 'pending')
-                            <button class="btn btn-sm btn-success mb-1"
+                            <button class="btn btn-sm btn-approve mb-1"
                                 data-bs-toggle="modal" data-bs-target="#approveModal{{ $booking->booking_id }}">
                                 <i class="bi bi-check-lg"></i> Approve
                             </button>
-                            <button class="btn btn-sm btn-danger"
+                            <button class="btn btn-sm btn-reject"
                                 data-bs-toggle="modal" data-bs-target="#rejectModal{{ $booking->booking_id }}">
                                 <i class="bi bi-x-lg"></i> Reject
                             </button>
@@ -88,7 +88,7 @@
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                <button type="submit" class="btn btn-success">Approve</button>
+                                                <button type="submit" class="btn btn-approve">Approve</button>
                                             </div>
                                         </form>
                                     </div>
@@ -118,7 +118,7 @@
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                <button type="submit" class="btn btn-danger">Reject</button>
+                                                <button type="submit" class="btn btn-reject">Reject</button>
                                             </div>
                                         </form>
                                     </div>

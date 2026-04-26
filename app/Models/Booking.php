@@ -12,6 +12,7 @@ class Booking extends Model
         'user_id',
         'laboratory_id',
         'purpose',
+        'number_of_persons',
         'start_time',
         'end_time',
         'status',
@@ -40,10 +41,18 @@ class Booking extends Model
         return $this->hasOne(Approval::class, 'booking_id', 'booking_id');
     }
 
-    // A booking can request many equipment items
+    // A booking can request many equipment items (intermediate model)
     public function bookingEquipment()
     {
         return $this->hasMany(BookingEquipment::class, 'booking_id', 'booking_id');
+    }
+
+    // A booking has many equipment (direct many-to-many relationship)
+    public function equipment()
+    {
+        return $this->belongsToMany(Equipment::class, 'booking_equipment', 'booking_id', 'equipment_id')
+                    ->withPivot('quantity_requested')
+                    ->withTimestamps();
     }
 
     // A booking can trigger many notifications

@@ -19,12 +19,13 @@ class BookingService
                 }
 
                 $booking = Booking::create([
-                    'user_id'       => $userId,
-                    'laboratory_id' => $data['laboratory_id'],
-                    'purpose'       => $data['purpose'],
-                    'start_time'    => $data['start_time'],
-                    'end_time'      => $data['end_time'],
-                    'status'        => 'pending',
+                    'user_id'           => $userId,
+                    'laboratory_id'     => $data['laboratory_id'],
+                    'purpose'           => $data['purpose'],
+                    'number_of_persons' => $data['number_of_persons'],
+                    'start_time'        => $data['start_time'],
+                    'end_time'          => $data['end_time'],
+                    'status'            => 'pending',
                 ]);
 
                 // Only insert equipment if actually selected and quantities are provided
